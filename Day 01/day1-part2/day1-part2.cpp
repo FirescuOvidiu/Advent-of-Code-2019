@@ -1,0 +1,29 @@
+#include "../../AOCHeaders/stdafx.h"
+#include "../../AOCHeaders/AOC.h"
+
+
+int main()
+{
+	std::fstream in("input.in", std::fstream::in);
+	std::fstream out("output.out", std::fstream::out);
+
+	int number = 0;
+	long long sum = 0;
+
+	while (in >> number)
+	{
+		while (number >= 3)
+		{
+			number = std::round(number / 3) - 2;
+			if (number >= 0)
+			{
+				sum = sum + number;
+			}
+		}
+	}
+
+	out << sum;
+
+	in.close();
+	out.close();
+}
