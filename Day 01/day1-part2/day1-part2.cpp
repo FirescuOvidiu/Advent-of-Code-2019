@@ -14,13 +14,13 @@ int main()
 	{
 		if (number >= 3)
 		{
-			number = std::round(number / 3) - 2;
-		}
+			number = number / 3 - 2;
 
-		while (number >= 3)
-		{
-			sum = sum + number;
-			number = std::round(number / 3) - 2;
+			while (number >= 3)
+			{
+				sum = sum + number;
+				number = number / 3 - 2;
+			}
 		}
 
 		if (number >= 0)

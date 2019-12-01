@@ -12,7 +12,7 @@ int main()
 
 	while (in >> n)
 	{
-		sum = sum + std::round(n / 3) - 2;
+		sum = sum + n / 3 - 2;
 	}
 
 	out << sum;
