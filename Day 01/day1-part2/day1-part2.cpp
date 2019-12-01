@@ -12,13 +12,20 @@ int main()
 
 	while (in >> number)
 	{
-		while (number >= 3)
+		if (number >= 3)
 		{
 			number = std::round(number / 3) - 2;
-			if (number >= 0)
-			{
-				sum = sum + number;
-			}
+		}
+
+		while (number >= 3)
+		{
+			sum = sum + number;
+			number = std::round(number / 3) - 2;
+		}
+
+		if (number >= 0)
+		{
+			sum = sum + number;
 		}
 	}
 
