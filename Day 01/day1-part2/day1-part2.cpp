@@ -12,20 +12,12 @@ int main()
 
 	while (in >> number)
 	{
-		if (number >= 3)
-		{
-			number = number / 3 - 2;
+		number = number / 3 - 2;
 
-			while (number >= 3)
-			{
-				sum = sum + number;
-				number = number / 3 - 2;
-			}
-		}
-
-		if (number >= 0)
+		while (number > 0)
 		{
 			sum = sum + number;
+			number = number / 3 - 2;
 		}
 	}
 
