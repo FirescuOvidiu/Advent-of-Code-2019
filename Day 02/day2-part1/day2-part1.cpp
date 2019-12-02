@@ -4,16 +4,16 @@
 
 void readInput(std::fstream& in, std::vector<int>& v)
 {
-	int nr = 0;
-	char aux;
+	int number = 0;
+	char aux{};
 
-	while (in >> nr >> aux)
+	while (in >> number >> aux)
 	{
-		v.push_back(nr);
+		v.push_back(number);
 	}
 
-	in >> nr;
-	v.push_back(nr);
+	in >> number;
+	v.push_back(number);
 }
 
 

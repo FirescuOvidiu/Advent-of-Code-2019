@@ -7,12 +7,12 @@ int main()
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
 	
-	int n = 0;
+	int number = 0;
 	long long sum = 0;
 
-	while (in >> n)
+	while (in >> number)
 	{
-		sum = sum + n / 3 - 2;
+		sum = sum + number / 3 - 2;
 	}
 
 	out << sum;

@@ -4,16 +4,16 @@
 
 void readInput(std::fstream& in, std::vector<int>& v)
 {
-	int nr = 0;
-	char aux;
+	int number = 0;
+	char aux{};
 
-	while (in >> nr >> aux)
+	while (in >> number >> aux)
 	{
-		v.push_back(nr);
+		v.push_back(number);
 	}
 
-	in >> nr;
-	v.push_back(nr);
+	in >> number;
+	v.push_back(number);
 }
 
 
@@ -26,13 +26,13 @@ int main()
 	readInput(in, v);
 	std::vector<int> aux(v);
 
-	for (int pos1 = 0; pos1 < 100; pos1++)
+	for (int noun = 0; noun < 100; noun++)
 	{
-		for (int pos2 = 0; pos2 < 100; pos2++)
+		for (int verb = 0; verb < 100; verb++)
 		{
 			v = aux;
-			v[1] = pos1;
-			v[2] = pos2;
+			v[1] = noun;
+			v[2] = verb;
 
 			for (int currPos = 0; v[currPos] != 99; currPos += 4)
 			{
@@ -49,9 +49,9 @@ int main()
 
 			if (v[0] == 19690720)
 			{
-				out << pos1 * 100 + pos2;
-				pos1 = 100;
-				pos2 = 100;
+				out << noun * 100 + verb;
+				noun = 100;
+				verb = 100;
 			}
 		}
 	}
