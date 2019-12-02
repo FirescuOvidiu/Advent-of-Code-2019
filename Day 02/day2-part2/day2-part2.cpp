@@ -26,9 +26,9 @@ int main()
 	readInput(in, v);
 	std::vector<int> aux(v);
 
-	for (int pos1 = 0; pos1 <= 100; pos1++)
+	for (int pos1 = 0; pos1 < 100; pos1++)
 	{
-		for (int pos2 = 0; pos2 <= 100; pos2++)
+		for (int pos2 = 0; pos2 < 100; pos2++)
 		{
 			v = aux;
 			v[1] = pos1;
