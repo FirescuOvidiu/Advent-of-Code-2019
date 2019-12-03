@@ -4,7 +4,7 @@
 class Coordinate
 {
 public:
-	Coordinate(int x = 0, int y = 0) : x(x), y(y) {}
+	Coordinate(int x = 0, int y = 0, int stepts = 0) : x(x), y(y), steps(stepts) {}
 
 	static int manhattanDistance(const Coordinate& c1, const Coordinate& c2)
 	{
@@ -18,15 +18,15 @@ public:
 
 public:
 	int x, y;
+	int steps;
 };
-
 
 
 void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 {
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
-	int number = 0;
+	int number = 0, steps = 0;
 
 	while (in >> dir >> number)
 	{
@@ -35,29 +35,35 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 		case 'R':
 			for (int i = 1; i <= number; i++)
 			{
+				steps++;
 				currPos.y++;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
 			}
 			break;
 		case 'L':
 			for (int i = 1; i <= number; i++)
 			{
+
+				steps++;
 				currPos.y--;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
 			}
 			break;
 		case 'U':
 			for (int i = 1; i <= number; i++)
 			{
+				steps++;
 				currPos.x--;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
 			}
 			break;
 		case 'D':
 			for (int i = 1; i <= number; i++)
 			{
+
+				steps++;
 				currPos.x++;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
 			}
 		default:
 			break;
@@ -72,7 +78,8 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 	std::list<Coordinate>::iterator it = firstWireCoord.end();
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
-	int number = 0;
+	int number = 0, steps = 0;
+
 
 	while (in >> dir >> number)
 	{
@@ -81,40 +88,44 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 		case 'R':
 			for (int i = 1; i <= number; i++)
 			{
+				steps++;
 				currPos.y++;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
 				}
 			}
 			break;
 		case 'L':
 			for (int i = 1; i <= number; i++)
 			{
+				steps++;
 				currPos.y--;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
 				}
 			}
 			break;
 		case 'U':
 			for (int i = 1; i <= number; i++)
 			{
+				steps++;
 				currPos.x--;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
 				}
 			}
 			break;
 		case 'D':
 			for (int i = 1; i <= number; i++)
 			{
+				steps++;
 				currPos.x++;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
 				}
 			}
 		default:
@@ -136,18 +147,16 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
-	intersections.erase(intersections.begin());
-
-	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
+	int minSteps = (*(intersections.begin())).steps;
 	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
 	{
-		if (Coordinate::manhattanDistance(Coordinate(0, 0), (*it)) < minDist)
+		if ((*it).steps < minSteps)
 		{
-			minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*it));
+			minSteps = (*it).steps;
 		}
 	}
 
-	out << minDist;
+	out << minSteps;
 
 	in.close();
 	out.close();

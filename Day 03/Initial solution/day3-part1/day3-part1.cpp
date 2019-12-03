@@ -4,7 +4,7 @@
 class Coordinate
 {
 public:
-	Coordinate(int x = 0, int y = 0, int stepts = 0) : x(x), y(y), steps(stepts) {}
+	Coordinate(int x = 0, int y = 0) : x(x), y(y) {}
 
 	static int manhattanDistance(const Coordinate& c1, const Coordinate& c2)
 	{
@@ -18,15 +18,15 @@ public:
 
 public:
 	int x, y;
-	int steps;
 };
+
 
 
 void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 {
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
-	int number = 0, steps = 0;
+	int number = 0;
 
 	while (in >> dir >> number)
 	{
@@ -35,35 +35,29 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 		case 'R':
 			for (int i = 1; i <= number; i++)
 			{
-				steps++;
 				currPos.y++;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
 			}
 			break;
 		case 'L':
 			for (int i = 1; i <= number; i++)
 			{
-
-				steps++;
 				currPos.y--;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
 			}
 			break;
 		case 'U':
 			for (int i = 1; i <= number; i++)
 			{
-				steps++;
 				currPos.x--;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
 			}
 			break;
 		case 'D':
 			for (int i = 1; i <= number; i++)
 			{
-
-				steps++;
 				currPos.x++;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y, steps));
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
 			}
 		default:
 			break;
@@ -73,13 +67,12 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 }
 
 
-void readInput2(std::fstream& in,std::list<Coordinate>& firstWireCoord, std::vector<Coordinate>& intersections)
+void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::vector<Coordinate>& intersections)
 {
 	std::list<Coordinate>::iterator it = firstWireCoord.end();
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
-	int number = 0, steps = 0;
-
+	int number = 0;
 
 	while (in >> dir >> number)
 	{
@@ -88,44 +81,40 @@ void readInput2(std::fstream& in,std::list<Coordinate>& firstWireCoord, std::vec
 		case 'R':
 			for (int i = 1; i <= number; i++)
 			{
-				steps++;
 				currPos.y++;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
+					intersections.push_back(Coordinate(currPos.x, currPos.y));
 				}
 			}
 			break;
 		case 'L':
 			for (int i = 1; i <= number; i++)
 			{
-				steps++;
 				currPos.y--;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
+					intersections.push_back(Coordinate(currPos.x, currPos.y));
 				}
 			}
 			break;
 		case 'U':
 			for (int i = 1; i <= number; i++)
 			{
-				steps++;
 				currPos.x--;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
+					intersections.push_back(Coordinate(currPos.x, currPos.y));
 				}
 			}
 			break;
 		case 'D':
 			for (int i = 1; i <= number; i++)
 			{
-				steps++;
 				currPos.x++;
 				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y, steps + (*it).steps));
+					intersections.push_back(Coordinate(currPos.x, currPos.y));
 				}
 			}
 		default:
@@ -147,17 +136,20 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
-	int minSteps = (*(intersections.begin())).steps;
+	intersections.erase(intersections.begin());
+
+	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
 	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
 	{
-		if ((*it).steps < minSteps)
+		if (Coordinate::manhattanDistance(Coordinate(0, 0), (*it)) < minDist)
 		{
-			minSteps = (*it).steps;
+			minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*it));
 		}
 	}
 
-	out << minSteps;
+	out << minDist;
 
 	in.close();
 	out.close();
 }
+
