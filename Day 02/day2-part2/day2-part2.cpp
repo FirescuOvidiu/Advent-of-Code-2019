@@ -1,5 +1,4 @@
 #include "../../AOCHeaders/stdafx.h"
-#include "../../AOCHeaders/AOC.h"
 
 
 void readInput(std::fstream& in, std::vector<int>& v)
@@ -7,13 +6,11 @@ void readInput(std::fstream& in, std::vector<int>& v)
 	int number = 0;
 	char aux{};
 
-	while (in >> number >> aux)
+	while (in >> number)
 	{
 		v.push_back(number);
+		in >> aux;
 	}
-
-	in >> number;
-	v.push_back(number);
 }
 
 

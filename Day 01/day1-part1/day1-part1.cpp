@@ -1,5 +1,4 @@
 #include "../../AOCHeaders/stdafx.h"
-#include "../../AOCHeaders/AOC.h"
 
 
 int main()
