@@ -136,8 +136,6 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
-	intersections.erase(intersections.begin());
-
 	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
 	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
 	{
