@@ -4,7 +4,7 @@
 class Coordinate
 {
 public:
-	Coordinate(int x = 0, int y = 0) : x(x), y(y) {}
+	Coordinate(int x = 0, int y = 0, int stepts = 0) : x(x), y(y), steps(stepts) {}
 
 	static int manhattanDistance(const Coordinate& c1, const Coordinate& c2)
 	{
@@ -18,6 +18,7 @@ public:
 
 public:
 	int x, y;
+	int steps;
 };
 
 
@@ -39,35 +40,36 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 {
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
-	int number = 0;
+	int number = 0, steps = 0;
 
 	while (in >> dir >> number)
 	{
 		switch (dir)
 		{
 		case 'R':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true));
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y + 1, steps + 1), Coordinate(currPos.x, currPos.y + number, steps + number), true));
 			currPos.y += number;
 			break;
 
 		case 'L':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y - number), Coordinate(currPos.x, currPos.y - 1), true));
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y - number, steps + number), Coordinate(currPos.x, currPos.y - 1, steps + 1), true));
 			currPos.y -= number;
 			break;
 
 		case 'U':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false));
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x - number, currPos.y, steps+ number), Coordinate(currPos.x - 1, currPos.y, steps + 1) , false));
 			currPos.x -= number;
 			break;
 
 		case 'D':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x + 1, currPos.y), Coordinate(currPos.x + number, currPos.y), false));
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x + 1, currPos.y, steps + 1), Coordinate(currPos.x + number, currPos.y, steps + number), false));
 			currPos.x += number;
 			break;
 
 		default:
 			break;
 		}
+		steps += number;
 		in >> aux;
 	}
 }
@@ -77,7 +79,7 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 {
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
-	int number = 0;
+	int number = 0, steps = 0;
 
 	while (in >> dir >> number)
 	{
@@ -86,7 +88,7 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 		case 'R':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true),(*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1, steps + 1), Coordinate(currPos.x, currPos.y + number, steps + number), true), (*currSegment), intersections);
 			}
 			currPos.y += number;
 			break;
@@ -94,7 +96,7 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 		case 'L':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x, currPos.y - number), Coordinate(currPos.x, currPos.y - 1), true), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x, currPos.y - number, steps + number), Coordinate(currPos.x, currPos.y - 1, steps + 1), true), (*currSegment), intersections);
 			}
 			currPos.y -= number;
 			break;
@@ -102,7 +104,7 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 		case 'U':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y, steps + number), Coordinate(currPos.x - 1, currPos.y, steps + 1), false), (*currSegment), intersections);
 			}
 			currPos.x -= number;
 			break;
@@ -110,7 +112,7 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 		case 'D':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x + 1, currPos.y), Coordinate(currPos.x + number, currPos.y), false), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x + 1, currPos.y, steps + 1), Coordinate(currPos.x + number, currPos.y, steps + number), false), (*currSegment), intersections);
 			}
 			currPos.x += number;
 			break;
@@ -118,6 +120,7 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 		default:
 			break;
 		}
+		steps += number;
 		in >> aux;
 	}
 }
@@ -176,17 +179,19 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 
 	Coordinate intersPoint;
 	// Checking if the two lines are intersected
+
 	if (!s1.hOv)
 	{
 		std::swap(s1, s2);
 	}
-
 	intersPoint.x = s1.a.x;
 	intersPoint.y = s2.a.y;
 
 	if (((intersPoint.x >= s2.a.x) && (intersPoint.x <= s2.b.x)) &&
 		((intersPoint.y >= s1.a.y) && (intersPoint.y <= s1.b.y)))
 	{
+		intersPoint.steps += s1.a.steps < s1.b.steps ? s1.a.steps + abs(intersPoint.y - s1.a.y) : s1.b.steps + abs(intersPoint.y - s1.b.y);
+		intersPoint.steps += s2.a.steps < s2.b.steps ? s2.a.steps + abs(intersPoint.x - s2.a.x) : s2.b.steps + abs(intersPoint.x - s2.b.x);
 		intersections.push_back(intersPoint);
 	}
 }
@@ -203,16 +208,16 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
-	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
+	int minSteps = (*(intersections.begin())).steps;
 	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
 	{
-		if (Coordinate::manhattanDistance(Coordinate(0, 0), (*it)) < minDist)
+		if ((*it).steps < minSteps)
 		{
-			minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*it));
+			minSteps = (*it).steps;
 		}
 	}
 
-	out << minDist;
+	out << minSteps;
 
 	in.close();
 	out.close();
