@@ -149,9 +149,15 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 		}
 		else
 		{
-			for (int pos = s1.a.y; pos <= std::min(s1.b.y, s2.b.y); pos++)
+			Coordinate left = s2.a;
+			Coordinate right = std::min(s1.b, s2.b);
+			if (left.steps > right.steps)
 			{
-				intersections.push_back(Coordinate(s1.a.x, pos));
+				std::swap(left, right);
+			}
+			for (int pos = left.y; pos <= right.y; pos++)
+			{
+				intersections.push_back(Coordinate(s1.a.x, left.steps + std::abs(pos - left.y)));
 			}
 		}
 	}
@@ -170,9 +176,15 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 		}
 		else
 		{
-			for (int pos = s1.a.x; pos <= std::min(s1.b.x, s2.b.x); pos++)
+			Coordinate left = s2.a;
+			Coordinate right = std::min(s1.b, s2.b);
+			if (left.steps > right.steps)
 			{
-				intersections.push_back(Coordinate(pos, s1.a.y));
+				std::swap(left, right);
+			}
+			for (int pos = left.x; pos <= right.x; pos++)
+			{
+				intersections.push_back(Coordinate(pos, s1.a.y, left.steps + std::abs(pos - left.x)));
 			}
 		}
 	}
