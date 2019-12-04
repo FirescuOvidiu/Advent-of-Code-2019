@@ -14,5 +14,3 @@
 #include <utility>
 #include <algorithm>
 #include <math.h>
-
-#include "AOC.h"
