@@ -31,12 +31,7 @@ bool meetCriteria(int currNumber)
 	// If the number - has two consecutive digits identical and
 	//				 - has the digits sorted ascending
 	// Than it meets the criteria
-	if (firstRule && secondRule)
-	{
-		return true;
-	}
-
-	return false;
+	return (firstRule && secondRule);
 }
 
 

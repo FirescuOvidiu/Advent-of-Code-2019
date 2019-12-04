@@ -62,11 +62,7 @@ bool meetCriteria(int currNumber)
 	// If the number - has exactly two consecutive digits identical 
 	//				 - has the digits sorted ascending
 	// Than it meets the criteria
-	if (firstRule && secondRule)
-	{
-		return true;
-	}
-	return false;
+	return (firstRule && secondRule);
 }
 
 int main()
