@@ -12,7 +12,7 @@ int main()
 	int aux = 0;
 	int last = 0;
 	int nr = 0;
-	for (int i = 172930; i < 683082; i++)
+	for (int i = 172930; i <= 683082; i++)
 	{
 		firstRule = false;
 		secondRule = true;
