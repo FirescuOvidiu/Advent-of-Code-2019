@@ -1,16 +1,35 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-void readInput(std::fstream& in, std::vector<int>& v)
+void readInput(std::fstream& in, std::vector<int>& integers)
 {
 	int number = 0;
 	char aux{};
 
 	while (in >> number)
 	{
-		v.push_back(number);
+		integers.push_back(number);
 		in >> aux;
 	}
+}
+
+
+int IntCodeProgram(std::vector<int> integers)
+{
+	for (int currPos = 0; integers[currPos] != 99; currPos += 4)
+	{
+		switch ((integers[currPos]))
+		{
+		case 1:
+			integers[integers[currPos + 3]] = integers[integers[currPos + 1]] + integers[integers[currPos + 2]];
+			break;
+		case 2:
+			integers[integers[currPos + 3]] = integers[integers[currPos + 1]] * integers[integers[currPos + 2]];
+			break;
+		}
+	}
+
+	return integers[0];
 }
 
 
@@ -18,33 +37,18 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-	std::vector<int> v;
+	std::vector<int> integers;
 
-	readInput(in, v);
-	std::vector<int> aux(v);
+	readInput(in, integers);
 
 	for (int noun = 0; noun < 100; noun++)
 	{
 		for (int verb = 0; verb < 100; verb++)
 		{
-			v = aux;
-			v[1] = noun;
-			v[2] = verb;
+			integers[1] = noun;
+			integers[2] = verb;
 
-			for (int currPos = 0; v[currPos] != 99; currPos += 4)
-			{
-				switch ((v[currPos]))
-				{
-				case 1:
-					v[v[currPos + 3]] = v[v[currPos + 1]] + v[v[currPos + 2]];
-					break;
-				case 2:
-					v[v[currPos + 3]] = v[v[currPos + 1]] * v[v[currPos + 2]];
-					break;
-				}
-			}
-
-			if (v[0] == 19690720)
+			if (IntCodeProgram(integers) == 19690720)
 			{
 				out << noun * 100 + verb;
 				noun = 100;

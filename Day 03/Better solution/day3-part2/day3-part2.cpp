@@ -36,6 +36,9 @@ public:
 void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersections);
 
 
+// We save into a vector the segments of the first wire and the steps of the coordinates of the segment
+// A segment is represented by two coordinates:
+// - start coordinate and the next position of that coordinate after executing the instruction (L/R/U/D number)
 void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 {
 	Coordinate currPos(0, 0);
@@ -46,9 +49,9 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 	{
 		switch (dir)
 		{
-		case 'R':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y + 1, steps + 1), Coordinate(currPos.x, currPos.y + number, steps + number), true));
-			currPos.y += number;
+		case 'U':
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x - number, currPos.y, steps + number), Coordinate(currPos.x - 1, currPos.y, steps + 1), false));
+			currPos.x -= number;
 			break;
 
 		case 'L':
@@ -56,9 +59,9 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 			currPos.y -= number;
 			break;
 
-		case 'U':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x - number, currPos.y, steps+ number), Coordinate(currPos.x - 1, currPos.y, steps + 1) , false));
-			currPos.x -= number;
+		case 'R':
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y + 1, steps + 1), Coordinate(currPos.x, currPos.y + number, steps + number), true));
+			currPos.y += number;
 			break;
 
 		case 'D':
@@ -75,6 +78,9 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 }
 
 
+// We calculate the segments of the second wire and the steps for the two corodinates of the segment
+// and check for every segment if it intersects the segments from the first wire
+// If it does we find and save the coordinate of the intersection and the steps of the intersection point in a vector(see checkIntersection function)
 void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vector<Coordinate>& intersections)
 {
 	Coordinate currPos(0, 0);
@@ -85,12 +91,12 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 	{
 		switch (dir)
 		{
-		case 'R':
+		case 'U':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1, steps + 1), Coordinate(currPos.x, currPos.y + number, steps + number), true), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y, steps + number), Coordinate(currPos.x - 1, currPos.y, steps + 1), false), (*currSegment), intersections);
 			}
-			currPos.y += number;
+			currPos.x -= number;
 			break;
 
 		case 'L':
@@ -101,12 +107,12 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 			currPos.y -= number;
 			break;
 
-		case 'U':
+		case 'R':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y, steps + number), Coordinate(currPos.x - 1, currPos.y, steps + 1), false), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1, steps + 1), Coordinate(currPos.x, currPos.y + number, steps + number), true), (*currSegment), intersections);
 			}
-			currPos.x -= number;
+			currPos.y += number;
 			break;
 
 		case 'D':
@@ -136,6 +142,7 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 	}
 
 	// Checking if we have horizontal paralel lines and have the same x
+	// and add to a vector the points of intersection with their steps
 	if ((s1.hOv) && (s2.hOv) && (s1.a.x == s2.a.x))
 	{
 		if (s1.a.y > s2.a.y)
@@ -163,6 +170,7 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 	}
 
 	// Checking if we have vertical paralel lines and have the same y
+	// and add to a vector the points of intersection with their steps
 	if ((!s1.hOv) && (!s2.hOv) && (s1.a.y == s2.a.y))
 	{
 		if (s1.a.x > s2.a.x)
@@ -190,7 +198,8 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 	}
 
 	Coordinate intersPoint;
-	// Checking if the two lines are intersected
+	// Checking if the two lines intersect and add to a vector the intersection point
+	// with the steps necessary to get to that point
 
 	if (!s1.hOv)
 	{
@@ -220,6 +229,7 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
+	// Calculating the minimum number of steps and saving it into a variable
 	int minSteps = (*(intersections.begin())).steps;
 	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
 	{

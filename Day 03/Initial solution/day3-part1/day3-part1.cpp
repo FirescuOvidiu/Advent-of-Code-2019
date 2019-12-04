@@ -22,6 +22,7 @@ public:
 
 
 
+// Saving every coordinate of the first path into a list
 void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 {
 	Coordinate currPos(0, 0);
@@ -32,20 +33,6 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 	{
 		switch (dir)
 		{
-		case 'R':
-			for (int i = 1; i <= number; i++)
-			{
-				currPos.y++;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
-			}
-			break;
-		case 'L':
-			for (int i = 1; i <= number; i++)
-			{
-				currPos.y--;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
-			}
-			break;
 		case 'U':
 			for (int i = 1; i <= number; i++)
 			{
@@ -53,12 +40,31 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
 			}
 			break;
+
+		case 'L':
+			for (int i = 1; i <= number; i++)
+			{
+				currPos.y--;
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+			}
+			break;
+
+		case 'R':
+			for (int i = 1; i <= number; i++)
+			{
+				currPos.y++;
+				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+			}
+			break;
+
 		case 'D':
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.x++;
 				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
 			}
+			break;
+
 		default:
 			break;
 		}
@@ -67,6 +73,8 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 }
 
 
+// Parsing every coordinate of the second wire and checking if that coordinate is in the list with the coordinates of the first wire
+// If it is, it means we hit an intersection, we save that coord into a vector
 void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::vector<Coordinate>& intersections)
 {
 	std::list<Coordinate>::iterator it = firstWireCoord.end();
@@ -78,26 +86,6 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 	{
 		switch (dir)
 		{
-		case 'R':
-			for (int i = 1; i <= number; i++)
-			{
-				currPos.y++;
-				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
-				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
-				}
-			}
-			break;
-		case 'L':
-			for (int i = 1; i <= number; i++)
-			{
-				currPos.y--;
-				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
-				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
-				}
-			}
-			break;
 		case 'U':
 			for (int i = 1; i <= number; i++)
 			{
@@ -108,6 +96,29 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 				}
 			}
 			break;
+
+		case 'L':
+			for (int i = 1; i <= number; i++)
+			{
+				currPos.y--;
+				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
+				{
+					intersections.push_back(Coordinate(currPos.x, currPos.y));
+				}
+			}
+			break;
+
+		case 'R':
+			for (int i = 1; i <= number; i++)
+			{
+				currPos.y++;
+				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
+				{
+					intersections.push_back(Coordinate(currPos.x, currPos.y));
+				}
+			}
+			break;
+
 		case 'D':
 			for (int i = 1; i <= number; i++)
 			{
@@ -117,6 +128,8 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 					intersections.push_back(Coordinate(currPos.x, currPos.y));
 				}
 			}
+			break;
+
 		default:
 			break;
 		}
@@ -136,6 +149,8 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
+	// Calculating the distance from the center point to every intersection
+	// And saving the minimum distance into a variable
 	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
 	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
 	{

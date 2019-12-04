@@ -14,30 +14,36 @@ void readInput(std::fstream& in, std::vector<int>& v)
 }
 
 
+void intCodeProgram(std::vector<int>& integers)
+{
+	for (int currPos = 0; integers[currPos] != 99; currPos += 4)
+	{
+		switch ((integers[currPos]))
+		{
+		case 1:
+			integers[integers[currPos + 3]] = integers[integers[currPos + 1]] + integers[integers[currPos + 2]];
+			break;
+		case 2:
+			integers[integers[currPos + 3]] = integers[integers[currPos + 1]] * integers[integers[currPos + 2]];
+			break;
+		}
+	}
+}
+
+
 int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-	std::vector<int> v;
+	std::vector<int> integers;
 
-	readInput(in, v);
-	v[1] = 12;
-	v[2] = 2;
+	readInput(in, integers);
+	integers[1] = 12;
+	integers[2] = 2;
 
-	for (int pos = 0; v[pos] != 99; pos += 4)
-	{
-		switch ((v[pos]))
-		{
-		case 1:
-			v[v[pos + 3]] = v[v[pos + 1]] + v[v[pos + 2]];
-			break;
-		case 2:
-			v[v[pos + 3]] = v[v[pos + 1]] * v[v[pos + 2]];
-			break;
-		}
-	}
+	intCodeProgram(integers);
 
-	out << v[0];
+	out << integers[0];
 
 	in.close();
 	out.close();

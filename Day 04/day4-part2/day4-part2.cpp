@@ -16,8 +16,8 @@ bool meetCriteria(int currNumber)
 
 	while (currNumber > 9)
 	{
-		// Checking if we have exactly two consecutive digits for first two digits
-		// Example: currNumber = abcdef we check if b==a and b!=c 
+		// Checking if we have exactly two consecutive digits for first two digits of the number
+		// Example: currNumber = abc we check if b==a and b!=c 
 		// where b = currNumber % 10, a = currNumber / 10 % 10 and c = lastDigit
 		if (currNumber < 100)
 		{
@@ -28,7 +28,7 @@ bool meetCriteria(int currNumber)
 		}
 		else
 		{
-			// Checking if we have exactly two consecutive digits for last two digits
+			// Checking if we have exactly two consecutive digits for last two digits of the number
 		    // Example currNumber = abcdef we check if f==e and if f!=d 
 		    // where f = currNumber % 10, e = currNumber / 10 % 10 and d = currNumber / 100 % 10
 			if (currNumber >= 172930)
@@ -40,7 +40,7 @@ bool meetCriteria(int currNumber)
 			}
 			else
 			{
-				// Checking if we have exactly two consecutive digits for every interior two digits
+				// Checking if we have exactly two consecutive digits for every interior two digits of the number
 			    // Example currNumber = abcdef we check if c==b and c!=a and c!=e 
 			    // where c = currNumber % 10, b = currNumber / 10 % 10, d = currNumber / 100 % 10 and e = lastDigit
 				if ((currNumber % 10 == currNumber / 10 % 10) && (currNumber % 10 != currNumber / 100 % 10) && (currNumber % 10 != lastDigit))

@@ -35,6 +35,9 @@ public:
 void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersections);
 
 
+// We save into a vector the segments of the first wire
+// A segment is represented by two coordinates:
+// - start coordinate and the next position of that coordinate after executing the instruction (L/R/U/D number)
 void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 {
 	Coordinate currPos(0, 0);
@@ -45,9 +48,9 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 	{
 		switch (dir)
 		{
-		case 'R':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true));
-			currPos.y += number;
+		case 'U':
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false));
+			currPos.x -= number;
 			break;
 
 		case 'L':
@@ -55,9 +58,9 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 			currPos.y -= number;
 			break;
 
-		case 'U':
-			firstWireCoord.push_back(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false));
-			currPos.x -= number;
+		case 'R':
+			firstWireCoord.push_back(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true));
+			currPos.y += number;
 			break;
 
 		case 'D':
@@ -73,6 +76,8 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 }
 
 
+// We calculate the segments of the second wire and check for every segment if it intersects the segments from the first wire
+// If it does we add the coordinate of the intersection to a vector (see checkIntersection function)
 void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vector<Coordinate>& intersections)
 {
 	Coordinate currPos(0, 0);
@@ -83,12 +88,12 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 	{
 		switch (dir)
 		{
-		case 'R':
+		case 'U':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true),(*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false), (*currSegment), intersections);
 			}
-			currPos.y += number;
+			currPos.x -= number;
 			break;
 
 		case 'L':
@@ -99,12 +104,13 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 			currPos.y -= number;
 			break;
 
-		case 'U':
+
+		case 'R':
 			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true),(*currSegment), intersections);
 			}
-			currPos.x -= number;
+			currPos.y += number;
 			break;
 
 		case 'D':
@@ -133,6 +139,7 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 	}
 
 	// Checking if we have horizontal paralel lines and have the same x
+	// and add to a vector the points of intersection
 	if ((s1.hOv) && (s2.hOv) && (s1.a.x == s2.a.x))
 	{
 		if (s1.a.y > s2.a.y)
@@ -154,6 +161,7 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 	}
 
 	// Checking if we have vertical paralel lines and have the same y
+	// and add to a vector the points of intersection
 	if ((!s1.hOv) && (!s2.hOv) && (s1.a.y == s2.a.y))
 	{
 		if (s1.a.x > s2.a.x)
@@ -175,7 +183,7 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 	}
 
 	Coordinate intersPoint;
-	// Checking if the two lines are intersected
+	// Checking if the two lines intersect and add to a vector the intersection point
 	if (!s1.hOv)
 	{
 		std::swap(s1, s2);
@@ -203,6 +211,8 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
+	// Calculating the distance from the center point to every intersection
+	// And saving the minimum distance into a variable
 	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
 	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
 	{
