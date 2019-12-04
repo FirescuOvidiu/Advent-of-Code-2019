@@ -1,67 +1,96 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-int main()
+void readInput(std::fstream& in, int& firstNumber, int& secondNumber)
 {
-	std::fstream in("input.in", std::fstream::in);
-	std::fstream out("output.out", std::fstream::out);
+	char aux{};
+	in >> firstNumber >> aux >> secondNumber;
+}
 
 
+bool meetCriteria(int currNumber)
+{
 	bool firstRule = false;
 	bool secondRule = true;
-	int aux = 0;
-	int last = 0;
-	int nr = 0;
-	for (int i = 172930; i <= 683082; i++)
-	{
-		firstRule = false;
-		secondRule = true;
-		aux = i;
-		last = 0;
+	int lastDigit = 0;
 
-		while (i > 9)
+	while (currNumber > 9)
+	{
+		// Checking if we have exactly two consecutive digits for first two digits
+		// Example: currNumber = abcdef we check if b==a and b!=c 
+		// where b = currNumber % 10, a = currNumber / 10 % 10 and c = lastDigit
+		if (currNumber < 100)
 		{
-			if (i < 100)
+			if ((currNumber % 10 == currNumber / 10 % 10) && (currNumber % 10 != lastDigit))
 			{
-				if ((i % 10 == i / 10 % 10) && (i % 10 != last))
+				firstRule = true;
+			}
+		}
+		else
+		{
+			// Checking if we have exactly two consecutive digits for last two digits
+		    // Example currNumber = abcdef we check if f==e and if f!=d 
+		    // where f = currNumber % 10, e = currNumber / 10 % 10 and d = currNumber / 100 % 10
+			if (currNumber >= 172930)
+			{
+				if ((currNumber % 10 == currNumber / 10 % 10) && (currNumber % 10 != currNumber / 100 % 10))
 				{
 					firstRule = true;
 				}
 			}
 			else
 			{
-				if (i >= 172930)
+				// Checking if we have exactly two consecutive digits for every interior two digits
+			    // Example currNumber = abcdef we check if c==b and c!=a and c!=e 
+			    // where c = currNumber % 10, b = currNumber / 10 % 10, d = currNumber / 100 % 10 and e = lastDigit
+				if ((currNumber % 10 == currNumber / 10 % 10) && (currNumber % 10 != currNumber / 100 % 10) && (currNumber % 10 != lastDigit))
 				{
-					if ((i % 10 == i / 10 % 10) && (i % 10 != i / 100 % 10))
-					{
-						firstRule = true;
-					}
-				}
-				else
-				{
-					if ((i % 10 == i / 10 % 10) && (i % 10 != i / 100 % 10) && (i % 10 != last))
-					{
-						firstRule = true;
-					}
+					firstRule = true;
 				}
 			}
-
-			if (i % 10 < i/10 % 10)
-			{
-				secondRule = false;
-			}
-
-			last = i % 10;
-			i = i / 10;
 		}
 
-		if (firstRule && secondRule)
+		// Comparing two consecutive digits 
+		if (currNumber % 10 < currNumber / 10 % 10)
 		{
-			nr++;
+			secondRule = false;
 		}
-		i = aux;
+
+		lastDigit = currNumber % 10;
+		currNumber = currNumber / 10;
 	}
-	out << nr;
+	// If the number - has exactly two consecutive digits identical 
+	//				 - has the digits sorted ascending
+	// Than it meets the criteria
+	if (firstRule && secondRule)
+	{
+		return true;
+	}
+	return false;
+}
+
+int main()
+{
+	std::fstream in("input.in", std::fstream::in);
+	std::fstream out("output.out", std::fstream::out);
+
+	int firstNumber = 0, secondNumber = 0;
+	int count = 0;
+
+	readInput(in, firstNumber, secondNumber);
+
+	// Parsing the numbers
+	for (int currNumber = firstNumber; currNumber <= secondNumber; currNumber++)
+	{
+		// Counting the numbers that meet the criteria
+		if (meetCriteria(currNumber))
+		{
+			count++;
+		}
+	}
+
+	out << count;
+
 	in.close();
 	out.close();
 }

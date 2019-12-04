@@ -1,41 +1,66 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
+void readInput(std::fstream& in, int& firstNumber, int& secondNumber)
+{
+	char aux{};
+	in >> firstNumber >> aux >> secondNumber;
+}
+
+
+bool meetCriteria(int currNumber)
+{
+	bool firstRule = false;
+	bool secondRule = true;
+
+	while (currNumber > 9)
+	{
+		// Checking if we have two consecutive digits identical
+		if (currNumber % 10 == currNumber / 10 % 10)
+		{
+			firstRule = true;
+		}
+		// Comparing two consecutive digits 
+		if (currNumber % 10 < currNumber / 10 % 10)
+		{
+			secondRule = false;
+		}
+		currNumber = currNumber / 10;
+	}
+
+	// If the number - has two consecutive digits identical and
+	//				 - has the digits sorted ascending
+	// Than it meets the criteria
+	if (firstRule && secondRule)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
 int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
 
-	bool firstRule = false;
-	bool secondRule = true;
-	int aux = 0;
-	int nr = 0;
-	for (int i = 172930; i <= 683082; i++)
-	{
-		firstRule = false;
-		secondRule = true;
-		aux = i;
+	int firstNumber = 0, secondNumber = 0;
+	int count = 0;
 
-		while (i > 9)
+	readInput(in, firstNumber, secondNumber);
+
+	// Parsing the numbers
+	for (int currNumber = firstNumber; currNumber <= secondNumber; currNumber++)
+	{
+		// Counting the numbers that meet the criteria
+		if (meetCriteria(currNumber))
 		{
-			if (i % 10 == i / 10 % 10)
-			{
-				firstRule = true;
-			}
-			if (i % 10 < i / 10 % 10)
-			{
-				secondRule = false;
-			}
-			i = i / 10;
+			count++;
 		}
-		if (firstRule && secondRule)
-		{
-			nr++;
-		}
-		i = aux;
 	}
 
-	out << nr;
+	out << count;
 
 	in.close();
 	out.close();
