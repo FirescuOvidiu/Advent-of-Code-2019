@@ -1,7 +1,7 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-void readInput(std::fstream& in, std::vector<std::string>& firstObjs, std::vector<std::string>& secondObjs)
+void readInput(std::fstream& in, std::unordered_map<std::string, std::vector<std::string>>& graph)
 {
 	std::string line, firstObj, secondObj;
 
@@ -20,8 +20,8 @@ void readInput(std::fstream& in, std::vector<std::string>& firstObjs, std::vecto
 			secondObj += line[it++];
 		}
 
-		firstObjs.push_back(firstObj);
-		secondObjs.push_back(secondObj);
+		graph[firstObj].push_back(secondObj);
+		graph[secondObj].push_back(firstObj);
 
 		firstObj.erase();
 		secondObj.erase();
@@ -29,20 +29,14 @@ void readInput(std::fstream& in, std::vector<std::string>& firstObjs, std::vecto
 }
 
 
-int minOrbits(std::vector<std::string>& firstObjs, std::vector<std::string>& secondObj)
+int minOrbits(std::unordered_map<std::string, std::vector<std::string>>& graph)
 {
+	std::unordered_map<std::string, bool> visit;
 	std::queue<std::pair<std::string, int>> objects;
 	std::pair<std::string, int> currObj;
 
-	for (int it = 0; it < secondObj.size(); it++)
-	{
-		if (secondObj[it] == "YOU")
-		{
-			objects.push(std::pair<std::string, int>(secondObj[it], 0));
-			break;
-		}
-	}
-
+	objects.push(std::pair<std::string, int>("YOU", 0));
+	visit["YOU"] = true;
 
 	while (!objects.empty())
 	{
@@ -55,21 +49,12 @@ int minOrbits(std::vector<std::string>& firstObjs, std::vector<std::string>& sec
 		}
 		else
 		{
-			for (int it = 0; it < firstObjs.size(); it++)
+			for (const auto& adjacent : graph[currObj.first])
 			{
-				if ((firstObjs[it] == currObj.first) && (firstObjs[it] != ""))
+				if (!visit[adjacent])
 				{
-					objects.push(std::pair<std::string, int>(secondObj[it], currObj.second + 1));
-					secondObj[it] = "";
-				}
-			}
-
-			for (int it = 0; it < secondObj.size(); it++)
-			{
-				if ((secondObj[it] == currObj.first) && (secondObj[it] != ""))
-				{
-					objects.push(std::pair<std::string, int>(firstObjs[it], currObj.second + 1));
-					firstObjs[it] = "";
+					objects.push(std::pair<std::string, int>(adjacent, currObj.second + 1));
+					visit[adjacent] = true;
 				}
 			}
 		}
@@ -81,12 +66,11 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-	std::vector<std::string> firstObjs;
-	std::vector<std::string> secondObj;
+	std::unordered_map<std::string, std::vector<std::string>> graph;
 
-	readInput(in, firstObjs, secondObj);
+	readInput(in, graph);
 
-	out << minOrbits(firstObjs, secondObj);
+	out << minOrbits(graph);
 
 	in.close();
 	out.close();

@@ -1,7 +1,7 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-void readInput(std::fstream& in, std::vector<std::string>& firstObjs, std::vector<std::string>& secondObjs)
+void readInput(std::fstream& in, std::unordered_map<std::string, std::vector<std::string>>& graph)
 {
 	std::string line, firstObj, secondObj;
 
@@ -19,9 +19,7 @@ void readInput(std::fstream& in, std::vector<std::string>& firstObjs, std::vecto
 		{
 			secondObj += line[it++];
 		}
-
-		firstObjs.push_back(firstObj);
-		secondObjs.push_back(secondObj);
+		graph[firstObj].push_back(secondObj);
 
 		firstObj.erase();
 		secondObj.erase();
@@ -29,24 +27,14 @@ void readInput(std::fstream& in, std::vector<std::string>& firstObjs, std::vecto
 }
 
 
-int findTotalOrbits(const std::vector<std::string>& firstObjs, const std::vector<std::string>& secondObjs)
+int findTotalOrbits(std::unordered_map<std::string, std::vector<std::string>>& graph)
 {
 
 	std::queue<std::pair<std::string, int>> objects;
-	bool check = true;
-
-	for (int it = 0; it < firstObjs.size(); it++)
-	{
-		if (firstObjs[it] == "COM")
-		{
-			objects.push(std::pair<std::string, int>(firstObjs[it], 0));
-			break;
-		}
-	}
-
 	std::pair<std::string, int> currObj;
 	int totalOrbits = 0;
 
+	objects.push(std::pair < std::string, int >("COM", 0));
 	while (!objects.empty())
 	{
 		currObj = objects.front();
@@ -54,12 +42,9 @@ int findTotalOrbits(const std::vector<std::string>& firstObjs, const std::vector
 
 		totalOrbits += currObj.second;
 
-		for (int it = 0; it < firstObjs.size(); it++)
+		for (const auto& adjacent : graph[currObj.first])
 		{
-			if (currObj.first == firstObjs[it])
-			{
-				objects.push(std::pair<std::string, int>(secondObjs[it], currObj.second + 1));
-			}
+			objects.push(std::pair<std::string, int>(adjacent, currObj.second + 1));
 		}
 	}
 	
@@ -71,12 +56,11 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-	std::vector<std::string> firstObjs;
-	std::vector<std::string> secondObjs;
+	std::unordered_map<std::string, std::vector<std::string>> graph;
 
-	readInput(in, firstObjs, secondObjs);
+	readInput(in, graph);
 
-	out << findTotalOrbits(firstObjs, secondObjs);
+	out << findTotalOrbits(graph);
 
 	in.close();
 	out.close();
