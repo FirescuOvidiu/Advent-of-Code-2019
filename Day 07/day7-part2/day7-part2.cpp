@@ -37,10 +37,9 @@ void intCodeProgram(std::fstream& out, std::vector<int> integers, std::vector<Am
 
 	while (integers[currPos] != 99)
 	{
-
-		posMode1 = (integers[currPos] / 100 % 10 == 1) ? currPos + 1 : (currPos + 1 < integers.size()) ? integers[currPos + 1] : 0;
-		posMode2 = (integers[currPos] / 1000 % 10 == 1) ? currPos + 2 : (currPos + 2 < integers.size()) ? integers[currPos + 2] : 0;
-		posMode3 = (integers[currPos] / 10000 % 10 == 1) ? currPos + 3 : (currPos + 3 < integers.size()) ? integers[currPos + 3] : 0;
+		posMode1 = (integers[currPos] / 100 % 10 == 1) ? currPos + 1 : (currPos + 1 < integers.size()) ? integers[currPos + 1] : posMode1;
+		posMode2 = (integers[currPos] / 1000 % 10 == 1) ? currPos + 2 : (currPos + 2 < integers.size()) ? integers[currPos + 2] : posMode2;
+		posMode3 = (integers[currPos] / 10000 % 10 == 1) ? currPos + 3 : (currPos + 3 < integers.size()) ? integers[currPos + 3] : posMode3;
 
 		switch (integers[currPos] % 100)
 		{
@@ -64,7 +63,7 @@ void intCodeProgram(std::fstream& out, std::vector<int> integers, std::vector<Am
 			output = integers[integers[currPos + 1]];
 			currPos = currPos + 2;
 
-			// Save position of amplifier 'currAmplifier'
+			// Save position of the current amplifier
 			amplifiers[currAmplifier].integers = integers;
 			amplifiers[currAmplifier].currPosition = currPos;
 
@@ -111,12 +110,11 @@ int main()
 
 	readInput(in, integers);
 
-	int output = 0;
-	int max = 0;
-
-	// Vector used to save the states of every amplifier
+	// Used a vector to save the states of every amplifier
 	std::vector<Amplifiers> amplifiers(5, integers);
 	std::vector<int> perm{ 5,6,7,8,9 };
+	int highestSignal = 0;
+	int output = 0;
 
 	do {
 		output = 0;
@@ -127,14 +125,11 @@ int main()
 
 		intCodeProgram(out, integers, amplifiers, output);
 
-		if (max < output)
-		{
-			max = output;
-		}
+		highestSignal = std::max(highestSignal, output);
 
 	} while (std::next_permutation(perm.begin(), perm.end()));
 
-	out << max;
+	out << highestSignal;
 
 	in.close();
 	out.close();
