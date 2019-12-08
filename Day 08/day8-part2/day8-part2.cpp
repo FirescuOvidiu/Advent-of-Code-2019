@@ -6,14 +6,14 @@ void readInput(std::fstream& in, std::fstream& out)
 	std::vector<std::vector<int>> layers;
 	std::vector<int>currLayer;
 	int pixelsWide = 25, pixelsTall = 6;
-	char aux{};
+	char currPixel{};
 
 	while (!in.eof())
 	{
 		for (int i = 1; i <= pixelsWide * pixelsTall; i++)
 		{
-			in >> aux;
-			currLayer.push_back(aux - '0');
+			in >> currPixel;
+			currLayer.push_back(currPixel - '0');
 		}
 
 		layers.push_back(currLayer);

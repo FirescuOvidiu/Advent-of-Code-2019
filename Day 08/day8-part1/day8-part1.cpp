@@ -7,7 +7,7 @@ void readInput(std::fstream& in, std::fstream& out)
 	int countZeros = 0, minZeros = 2147483647;
 	int countOne = 0, countTwo = 0;
 	int multiplication = 0;
-	char aux{};
+	char pixel{};
 
 
 	while (!in.eof())
@@ -16,8 +16,8 @@ void readInput(std::fstream& in, std::fstream& out)
 
 		for (int i = 1; i <= pixelsWide * pixelsTall; i++)
 		{
-			in >> aux;
-			switch (aux - '0')
+			in >> pixel;
+			switch (pixel - '0')
 			{
 			case 0:
 				countZeros++;
