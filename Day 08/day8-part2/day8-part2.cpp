@@ -10,7 +10,7 @@ void readInput(std::fstream& in, std::fstream& out)
 
 	while (!in.eof())
 	{
-		for (int i = 1; i <= pixelsWide * pixelsTall; i++)
+		for (int it = 1; it <= pixelsWide * pixelsTall; it++)
 		{
 			in >> currPixel;
 			currLayer.push_back(currPixel - '0');
@@ -20,38 +20,45 @@ void readInput(std::fstream& in, std::fstream& out)
 		currLayer.clear();
 	}
 
-	std::vector<int> image;
+	std::vector<int> image(pixelsWide * pixelsTall, 2);
+
 	for (int pixel = 0; pixel < pixelsWide * pixelsTall; pixel++)
 	{
 		for (int layout = 0; layout < layers.size(); layout++)
 		{
+			if (layers[layout][pixel] == 2)
+			{
+				continue;
+			}
+
 			if (layers[layout][pixel] == 0)
 			{
-				image.push_back(0);
+				image[pixel] = 0;
 				break;
 			}
+
 			if (layers[layout][pixel] == 1)
 			{
-				image.push_back(1);
+				image[pixel] = 1;
 				break;
 			}
 		}
 	}
 
-	for (int pixel = 0; pixel < pixelsTall* pixelsWide; pixel++)
+	for (int pixel = 0; pixel < pixelsWide * pixelsTall; pixel++)
 	{
-		if (pixel % 25 == 0)
+		if (pixel % pixelsWide == 0)
 		{
 			out << "\n";
 		}
 
-		if (image[pixel] == 0)
+		if (image[pixel] == 1)
 		{
-			out << ". ";
+			out << "# ";
 		}
 		else
 		{
-			out << "# ";
+			out << ". ";
 		}
 	}
 }
