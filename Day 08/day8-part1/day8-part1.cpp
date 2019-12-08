@@ -3,42 +3,29 @@
 
 void readInput(std::fstream& in, std::fstream& out)
 {
-	int pixelsWide = 25, pixelsTall = 6;
-	int countZeros = 0, minZeros = 2147483647;
-	int countOne = 0, countTwo = 0;
-	int multiplication = 0;
+	std::vector<int> countsPos(3, 0);
+	int pixelsWide = 25, pixelsTall = 6, lengthLayout = pixelsWide * pixelsTall;
+	int minZeros = pixelsWide * pixelsTall + 1, multiplication = 0;
 	char pixel{};
 
 
 	while (!in.eof())
 	{
-		countZeros = countOne = countTwo = 0;
-
-		for (int i = 1; i <= pixelsWide * pixelsTall; i++)
+		for (int it = 1; it <= lengthLayout; it++)
 		{
 			in >> pixel;
-			switch (pixel - '0')
-			{
-			case 0:
-				countZeros++;
-				break;
-
-			case 1:
-				countOne++;
-				break;
-
-			case 2:
-				countTwo++;
-				break;
-			}
+			countsPos[pixel - '0']++;
 		}
 		
-		if (countZeros < minZeros)
+		if (countsPos[0] < minZeros)
 		{
-			minZeros = countZeros;
-			multiplication = countOne * countTwo;
+			minZeros = countsPos[0];
+			multiplication = countsPos[1] * countsPos[2];
 		}
+
+		std::fill(countsPos.begin(), countsPos.end(), 0);
 	}
+
 	out << multiplication;
 }
 
