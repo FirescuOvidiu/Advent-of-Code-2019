@@ -19,7 +19,7 @@ void intCodeProgram(std::fstream& out, std::vector<int>& integers)
 	int currPos = 0;
 	int posMode1 = 0;
 	int posMode2 = 0;
-	int posMode3 =0;
+	int posMode3 = 0;
 
 	while(integers[currPos] != 99)
 	{
@@ -40,12 +40,12 @@ void intCodeProgram(std::fstream& out, std::vector<int>& integers)
 			break;
 
 		case 3:
-			integers[integers[currPos+1]] = 5;
+			integers[posMode1] = 5;
 			currPos = currPos + 2;
 			break;
 
 		case 4:
-			out << integers[integers[currPos + 1]];
+			out << integers[posMode1];
 			currPos = currPos + 2;
 			break;
 

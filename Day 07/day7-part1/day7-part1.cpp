@@ -40,13 +40,13 @@ void intCodeProgram(std::fstream& out, std::vector<int> integers, int firstInput
 			break;
 
 		case 3:
-			integers[integers[currPos + 1]] = firstInput;
+			integers[posMode1] = firstInput;
 			firstInput = secondInput;
 			currPos = currPos + 2;
 			break;
 
 		case 4:
-			output = integers[integers[currPos + 1]];
+			output = integers[posMode1];
 			currPos = currPos + 2;
 			break;
 

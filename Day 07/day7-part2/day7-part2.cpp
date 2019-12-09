@@ -54,13 +54,13 @@ void intCodeProgram(std::fstream& out, std::vector<int> integers, std::vector<Am
 			break;
 
 		case 3:
-			integers[integers[currPos + 1]] = amplifiers[currAmplifier].firstInput;
+			integers[posMode1] = amplifiers[currAmplifier].firstInput;
 			amplifiers[currAmplifier].firstInput = amplifiers[currAmplifier].secondInput;
 			currPos = currPos + 2;
 			break;
 
 		case 4:
-			output = integers[integers[currPos + 1]];
+			output = integers[posMode1];
 			currPos = currPos + 2;
 
 			// Save position of the current amplifier
