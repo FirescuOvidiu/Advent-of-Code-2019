@@ -30,6 +30,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers)
 		case 0:
 			posMode1 = integers[currPos + 1];
 			break;
+			
 		case 1:
 			posMode1 = currPos + 1;
 			break;
@@ -44,6 +45,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers)
 		case 0:
 			posMode2 = integers[currPos + 2];
 			break;
+			
 		case 1:
 			posMode2 = currPos + 2;
 			break;
@@ -58,6 +60,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers)
 		case 0:
 			posMode3 = integers[currPos + 3];
 			break;
+			
 		case 1:
 			posMode3 = currPos + 3;
 			break;
