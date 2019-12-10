@@ -24,7 +24,7 @@ public:
 Coordinate startAsteroid;
 
 
-int findCmmdc(int a, int b)
+int findGCD(int a, int b)
 {
 	if (b == 0)
 	{
@@ -48,7 +48,7 @@ int findCmmdc(int a, int b)
 
 void calcDistBetweenBlockedAsteroids(Coordinate& distance, const Coordinate& currAsteroid, const int l, const int c)
 {
-	int cmmdc = findCmmdc(abs(currAsteroid.x - l), abs(currAsteroid.y - c));
+	int cmmdc = findGCD(abs(currAsteroid.x - l), abs(currAsteroid.y - c));
 	distance.x = abs(currAsteroid.x - l) / cmmdc;
 	distance.y = abs(currAsteroid.y - c) / cmmdc;
 
