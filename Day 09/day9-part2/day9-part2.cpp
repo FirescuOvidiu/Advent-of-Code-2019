@@ -15,7 +15,74 @@ void readInput(std::fstream& in, std::vector<long long>& integers)
 }
 
 
-void intCodeProgram(std::fstream& out, std::vector<long long>& integers)
+void setPosModes(const std::vector<long long>& integers, long long currPos, long long relativeBase, long long& posMode1, long long& posMode2, long long& posMode3)
+{
+	switch (integers[currPos] / 100 % 10)
+	{
+	case 0:
+		if (currPos + 1 < integers.size())
+		{
+			posMode1 = integers[currPos + 1];
+		}
+		break;
+
+	case 1:
+		posMode1 = currPos + 1;
+		break;
+
+	case 2:
+		if (currPos + 1 < integers.size())
+		{
+			posMode1 = relativeBase + integers[currPos + 1];
+		}
+		break;
+	}
+
+	switch (integers[currPos] / 1000 % 10)
+	{
+	case 0:
+		if (currPos + 2 < integers.size())
+		{
+			posMode2 = integers[currPos + 2];
+		}
+		break;
+
+	case 1:
+		posMode2 = currPos + 2;
+		break;
+
+	case 2:
+		if (currPos + 2 < integers.size())
+		{
+			posMode2 = relativeBase + integers[currPos + 2];
+		}
+		break;
+	}
+
+	switch (integers[currPos] / 10000 % 10)
+	{
+	case 0:
+		if (currPos + 3 < integers.size())
+		{
+			posMode3 = integers[currPos + 3];
+		}
+		break;
+
+	case 1:
+		posMode3 = currPos + 3;
+		break;
+
+	case 2:
+		if (currPos + 3 < integers.size())
+		{
+			posMode3 = relativeBase + integers[currPos + 3];
+		}
+		break;
+	}
+}
+
+
+void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const int input)
 {
 	long long currPos = 0;
 	long long posMode1 = 0;
@@ -25,50 +92,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers)
 
 	while (integers[currPos] != 99)
 	{
-		switch (integers[currPos] / 100 % 10)
-		{
-		case 0:
-			posMode1 = integers[currPos + 1];
-			break;
-			
-		case 1:
-			posMode1 = currPos + 1;
-			break;
-
-		case 2:
-			posMode1 = relativeBase + integers[currPos + 1];
-			break;
-		}
-
-		switch (integers[currPos] / 1000 % 10)
-		{
-		case 0:
-			posMode2 = integers[currPos + 2];
-			break;
-			
-		case 1:
-			posMode2 = currPos + 2;
-			break;
-
-		case 2:
-			posMode2 = relativeBase + integers[currPos + 2];
-			break;
-		}
-
-		switch (integers[currPos] / 10000 % 10)
-		{
-		case 0:
-			posMode3 = integers[currPos + 3];
-			break;
-			
-		case 1:
-			posMode3 = currPos + 3;
-			break;
-
-		case 2:
-			posMode3 = relativeBase + integers[currPos + 3];
-			break;
-		}
+		setPosModes(integers, currPos, relativeBase, posMode1, posMode2, posMode3);
 
 		switch (integers[currPos] % 100)
 		{
@@ -83,12 +107,12 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers)
 			break;
 
 		case 3:
-			integers[posMode1] = 2;
+			integers[posMode1] = input;
 			currPos = currPos + 2;
 			break;
 
 		case 4:
-			out << integers[posMode1] << " ";
+			out << integers[posMode1];
 			currPos = currPos + 2;
 			break;
 
@@ -124,9 +148,10 @@ int main()
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
 	std::vector<long long> integers(100000000);
+	int input = 2;
 
 	readInput(in, integers);
-	intCodeProgram(out, integers);
+	intCodeProgram(out, integers, input);
 
 	in.close();
 	out.close();
