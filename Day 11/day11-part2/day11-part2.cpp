@@ -172,7 +172,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, int inp
 
 		case 3:
 			input = map[rx][ry];
-			integers[posMode1] = map[rx][ry];
+			integers[posMode1] = input;
 			currPos = currPos + 2;
 			break;
 
@@ -186,7 +186,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, int inp
 			}
 			else
 			{
-				posDir = (integers[posMode1] == 0) ? (posDir - 1 + 4) % 4 : (posDir + 1 + 4) % 4;
+				posDir = (integers[posMode1] == 0) ? (posDir + 3) % 4 : (posDir + 1) % 4;
 
 				if (posDir == 0) ry++;
 				else if (posDir == 1) rx++;
