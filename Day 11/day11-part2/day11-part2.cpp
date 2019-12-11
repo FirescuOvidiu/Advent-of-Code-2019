@@ -37,7 +37,7 @@ void readInput(std::fstream& in, std::vector<long long>& integers)
 
 void writeOutput(std::fstream& out, const std::vector<std::vector<bool>>& map, int nLines, int nColumns)
 {
-	int saveX = 0, saveY = 0;
+	int minX = nLines, minY = nColumns, maxX = 0, maxY = 0;
 
 	for (int l = 0; l < nLines; l++)
 	{
@@ -45,15 +45,17 @@ void writeOutput(std::fstream& out, const std::vector<std::vector<bool>>& map, i
 		{
 			if (map[l][c] == 1)
 			{
-				saveX = l;	saveY = c;
-				l = c = 200;
+				if (l < minX)	minX = l;
+				if (l > maxX)	maxX = l;
+				if (c < minY)	minY = c;
+				if (c > maxY)	maxY = c;
 			}
 		}
 	}
 
-	for (int l = saveX; l < nLines; l++)
+	for (int l = minX; l <= maxX; l++)
 	{
-		for (int c = saveY; c < nColumns; c++)
+		for (int c = minY; c <= maxY; c++)
 		{
 			if (map[l][c] == 1)
 			{
