@@ -58,45 +58,45 @@ void updateVelocity(std::vector<Coordinate>& moons, const int numberMoons)
 
 
 bool findIndependentCoordinates(const std::vector<Coordinate>& moons, const std::vector<std::vector<int>>& initialMoonsPos,
-	 Coordinate& foundInitMoonsPos, const int steps, const int numberMoons)
+	 Coordinate& repeatMoonsPosAfter, const int steps, const int numberMoons)
 {
 	std::vector<bool> checkInitPos(3, true);
 
 	for (int currMoon = 0; currMoon < numberMoons; currMoon++)
 	{
-		if (initialMoonsPos[0][currMoon] != moons[currMoon].x)
+		if ((initialMoonsPos[0][currMoon] != moons[currMoon].x) || (moons[currMoon].velx != 0))
 		{
 			checkInitPos[0] = false;
 		}
 
-		if (initialMoonsPos[1][currMoon] != moons[currMoon].y)
+		if ((initialMoonsPos[1][currMoon] != moons[currMoon].y) || (moons[currMoon].vely != 0))
 		{
 			checkInitPos[1] = false;
 		}
 
-		if (initialMoonsPos[2][currMoon] != moons[currMoon].z)
+		if ((initialMoonsPos[2][currMoon] != moons[currMoon].z) || (moons[currMoon].velz != 0))
 		{
 			checkInitPos[2] = false;
 		}
 	}
 
 
-	if ((checkInitPos[0]) && (foundInitMoonsPos.x == -1))
+	if ((checkInitPos[0]) && (repeatMoonsPosAfter.x == -1))
 	{
-		foundInitMoonsPos.x = steps;
+		repeatMoonsPosAfter.x = steps;
 	}
 
-	if ((checkInitPos[1]) && (foundInitMoonsPos.y == -1))
+	if ((checkInitPos[1]) && (repeatMoonsPosAfter.y == -1))
 	{
-		foundInitMoonsPos.y = steps;
+		repeatMoonsPosAfter.y = steps;
 	}
 
-	if ((checkInitPos[2]) && (foundInitMoonsPos.z == -1))
+	if ((checkInitPos[2]) && (repeatMoonsPosAfter.z == -1))
 	{
-		foundInitMoonsPos.z = steps;
+		repeatMoonsPosAfter.z = steps;
 	}
 
-	return (foundInitMoonsPos.x != -1 && foundInitMoonsPos.y != -1 && foundInitMoonsPos.z != -1);
+	return (repeatMoonsPosAfter.x != -1 && repeatMoonsPosAfter.y != -1 && repeatMoonsPosAfter.z != -1);
 }
 
 
@@ -130,13 +130,12 @@ long long findLCM(long long a, long long b)
 
 long long findSteps(std::vector<Coordinate>& moons, const std::vector<std::vector<int>>& initialMoonsPos)
 {
-	Coordinate foundInitMoonsPos(-1, -1, -1);
+	Coordinate repeatMoonsPosAfter(-1, -1, -1);
 	int numberMoons = moons.size();
 	int steps = 1;
 
 	while (true)
 	{
-		steps++;
 		// Update velocity of the moons by applying gravity
 		updateVelocity(moons, numberMoons);
 
@@ -149,13 +148,14 @@ long long findSteps(std::vector<Coordinate>& moons, const std::vector<std::vecto
 		}
 
 		// Finding after how many steps the coodinates X,Y,Z repeat
-		if (findIndependentCoordinates(moons, initialMoonsPos, foundInitMoonsPos, steps, numberMoons))
+		if (findIndependentCoordinates(moons, initialMoonsPos, repeatMoonsPosAfter, steps, numberMoons))
 		{
 			break;
 		}
+		steps++;
 	}
 	
-	return findLCM(findLCM(foundInitMoonsPos.x, foundInitMoonsPos.y), foundInitMoonsPos.z);
+	return findLCM(findLCM(repeatMoonsPosAfter.x, repeatMoonsPosAfter.y), repeatMoonsPosAfter.z);
 }
 
 
