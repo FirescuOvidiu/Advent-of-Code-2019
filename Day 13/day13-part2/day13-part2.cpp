@@ -136,7 +136,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers,  int in
 					else
 					{
 						map[top][left] = integers[posMode1];
-
 						if (integers[posMode1] == 3)
 						{
 							horizPaddlePos = left;
