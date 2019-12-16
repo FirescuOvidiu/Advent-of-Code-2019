@@ -14,13 +14,13 @@ public:
 class state
 {
 public:
-	state(std::vector<long long> integers, Coordinate droid, int currPos, int relativeBase) : integers(integers), droid(droid), currPos(currPos), relativeBase(relativeBase) {}
+	state(std::vector<long long> integers, Coordinate droid, long long currPos, long long relativeBase) : integers(integers), droid(droid), currPos(currPos), relativeBase(relativeBase) {}
 
 public:
 	std::vector<long long> integers;
 	Coordinate droid;
-	int currPos;
-	int relativeBase;
+	long long currPos;
+	long long relativeBase;
 };
 
 
@@ -39,25 +39,26 @@ void readInput(std::fstream& in, std::vector<long long>& integers)
 {
 	long long steps = 0;
 	char aux{};
-	int it = 0;
 
 	while (in >> steps)
 	{
-		integers[it++] = steps;
+		integers.push_back(steps);
 		in >> aux;
 	}
 }
 
 
-void setPosModes(const std::vector<long long>& integers, long long currPos, long long relativeBase, long long& posMode1, long long& posMode2, long long& posMode3)
+void setPosModes(std::vector<long long>& integers, long long currPos, long long relativeBase, long long& posMode1, long long& posMode2, long long& posMode3, long long opcode)
 {
+	if (currPos + 3 >= integers.size())
+	{
+		integers.resize(currPos + 4);
+	}
+
 	switch (integers[currPos] / 100 % 10)
 	{
 	case 0:
-		if (currPos + 1 < integers.size())
-		{
-			posMode1 = integers[currPos + 1];
-		}
+		posMode1 = integers[currPos + 1];
 		break;
 
 	case 1:
@@ -65,20 +66,14 @@ void setPosModes(const std::vector<long long>& integers, long long currPos, long
 		break;
 
 	case 2:
-		if (currPos + 1 < integers.size())
-		{
-			posMode1 = relativeBase + integers[currPos + 1];
-		}
+		posMode1 = relativeBase + integers[currPos + 1];
 		break;
 	}
 
 	switch (integers[currPos] / 1000 % 10)
 	{
 	case 0:
-		if (currPos + 2 < integers.size())
-		{
-			posMode2 = integers[currPos + 2];
-		}
+		posMode2 = integers[currPos + 2];
 		break;
 
 	case 1:
@@ -86,20 +81,14 @@ void setPosModes(const std::vector<long long>& integers, long long currPos, long
 		break;
 
 	case 2:
-		if (currPos + 2 < integers.size())
-		{
-			posMode2 = relativeBase + integers[currPos + 2];
-		}
+		posMode2 = relativeBase + integers[currPos + 2];
 		break;
 	}
 
 	switch (integers[currPos] / 10000 % 10)
 	{
 	case 0:
-		if (currPos + 3 < integers.size())
-		{
-			posMode3 = integers[currPos + 3];
-		}
+		posMode3 = integers[currPos + 3];
 		break;
 
 	case 1:
@@ -107,16 +96,31 @@ void setPosModes(const std::vector<long long>& integers, long long currPos, long
 		break;
 
 	case 2:
-		if (currPos + 3 < integers.size())
-		{
-			posMode3 = relativeBase + integers[currPos + 3];
-		}
+		posMode3 = relativeBase + integers[currPos + 3];
 		break;
+	}
+
+	if (posMode1 >= integers.size())
+	{
+		integers.resize(posMode1 + 1);
+	}
+
+	if (posMode2 >= integers.size() &&
+		((opcode == 1) || (opcode == 2) || (opcode == 5) || (opcode == 6) || (opcode == 7) || (opcode == 8)))
+	{
+		integers.resize(posMode2 + 1);
+	}
+
+	if ((posMode3 >= integers.size()) &&
+		((opcode == 1) || (opcode == 2) || (opcode == 7) || (opcode == 8)))
+	{
+		integers.resize(posMode3 + 1);
 	}
 }
 
 
-void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const int input, std::vector<std::vector<char>>& map, Coordinate& droid, int& currPos, int& relativeBase, Coordinate& oxygenSystem)
+void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const int input, std::vector<std::vector<char>>& map, 
+	Coordinate& droid, long long& currPos, long long& relativeBase, Coordinate& oxygenSystem)
 {
 	long long posMode1 = 0;
 	long long posMode2 = 0;
@@ -125,7 +129,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const i
 
 	while (integers[currPos] != 99)
 	{
-		setPosModes(integers, currPos, relativeBase, posMode1, posMode2, posMode3);
+		setPosModes(integers, currPos, relativeBase, posMode1, posMode2, posMode3, integers[currPos] % 100);
 
 		switch (integers[currPos] % 100)
 		{
@@ -232,8 +236,8 @@ Coordinate findOxygenSystem(std::fstream& out, std::vector<long long>& integers,
 {
 	int dirX[] = { 2,-1,1,0,0 };
 	int dirY[] = { 2,0,0,-1,1 };
-	int auxCurrPos = 0;
-	int auxRelativeBase = 0;
+	long long auxCurrPos = 0;
+	long long auxRelativeBase = 0;
 	std::queue<state> states;
 	Coordinate droid(map.size() / 2, map.size() / 2), oxygenSystem;
 	state currState(integers, droid, 0, 0);
@@ -311,7 +315,7 @@ int main()
 	std::fstream out("output.out", std::fstream::out);
 
 	std::vector<std::vector<char>> map(5000, std::vector<char>(5000, '-'));
-	std::vector<long long> integers(100000);
+	std::vector<long long> integers;
 
 	readInput(in, integers);
 

@@ -25,11 +25,10 @@ void readInput(std::fstream& in, std::vector<long long>& integers)
 {
 	long long number = 0;
 	char aux{};
-	int it = 0;
 
 	while (in >> number)
 	{
-		integers[it++] = number;
+		integers.push_back(number);
 		in >> aux;
 	}
 }
@@ -43,7 +42,7 @@ void writeOutput(std::fstream& out, const std::vector<std::vector<bool>>& map, i
 	{
 		for (int c = 0; c < nColumns; c++)
 		{
-			if (map[l][c] == 1)
+			if (map[l][c])
 			{
 				if (l < minX)	minX = l;
 				if (l > maxX)	maxX = l;
@@ -57,7 +56,7 @@ void writeOutput(std::fstream& out, const std::vector<std::vector<bool>>& map, i
 	{
 		for (int c = minY; c <= maxY; c++)
 		{
-			if (map[l][c] == 1)
+			if (map[l][c])
 			{
 				out << "# ";
 			}
@@ -71,15 +70,17 @@ void writeOutput(std::fstream& out, const std::vector<std::vector<bool>>& map, i
 }
 
 
-void setPosModes(const std::vector<long long>& integers, long long currPos, long long relativeBase, long long& posMode1, long long& posMode2, long long& posMode3)
+void setPosModes(std::vector<long long>& integers, long long currPos, long long relativeBase, long long& posMode1, long long& posMode2, long long& posMode3, long long opcode)
 {
+	if (currPos + 3 >= integers.size())
+	{
+		integers.resize(currPos + 4);
+	}
+
 	switch (integers[currPos] / 100 % 10)
 	{
 	case 0:
-		if (currPos + 1 < integers.size())
-		{
-			posMode1 = integers[currPos + 1];
-		}
+		posMode1 = integers[currPos + 1];
 		break;
 
 	case 1:
@@ -87,20 +88,14 @@ void setPosModes(const std::vector<long long>& integers, long long currPos, long
 		break;
 
 	case 2:
-		if (currPos + 1 < integers.size())
-		{
-			posMode1 = relativeBase + integers[currPos + 1];
-		}
+		posMode1 = relativeBase + integers[currPos + 1];
 		break;
 	}
 
 	switch (integers[currPos] / 1000 % 10)
 	{
 	case 0:
-		if (currPos + 2 < integers.size())
-		{
-			posMode2 = integers[currPos + 2];
-		}
+		posMode2 = integers[currPos + 2];
 		break;
 
 	case 1:
@@ -108,20 +103,14 @@ void setPosModes(const std::vector<long long>& integers, long long currPos, long
 		break;
 
 	case 2:
-		if (currPos + 2 < integers.size())
-		{
-			posMode2 = relativeBase + integers[currPos + 2];
-		}
+		posMode2 = relativeBase + integers[currPos + 2];
 		break;
 	}
 
 	switch (integers[currPos] / 10000 % 10)
 	{
 	case 0:
-		if (currPos + 3 < integers.size())
-		{
-			posMode3 = integers[currPos + 3];
-		}
+		posMode3 = integers[currPos + 3];
 		break;
 
 	case 1:
@@ -129,16 +118,30 @@ void setPosModes(const std::vector<long long>& integers, long long currPos, long
 		break;
 
 	case 2:
-		if (currPos + 3 < integers.size())
-		{
-			posMode3 = relativeBase + integers[currPos + 3];
-		}
+		posMode3 = relativeBase + integers[currPos + 3];
 		break;
+	}
+
+	if (posMode1 >= integers.size())
+	{
+		integers.resize(posMode1 + 1);
+	}
+
+	if (posMode2 >= integers.size() &&
+		((opcode == 1) || (opcode == 2) || (opcode == 5) || (opcode == 6) || (opcode == 7) || (opcode == 8)))
+	{
+		integers.resize(posMode2 + 1);
+	}
+
+	if ((posMode3 >= integers.size()) &&
+		((opcode == 1) || (opcode == 2) || (opcode == 7) || (opcode == 8)))
+	{
+		integers.resize(posMode3 + 1);
 	}
 }
 
 
-void intCodeProgram(std::fstream& out, std::vector<long long>& integers, int input)
+void intCodeProgram(std::fstream& out, std::vector<long long>& integers, bool input)
 {
 	long long currPos = 0;
 	long long posMode1 = 0;
@@ -154,11 +157,11 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, int inp
 
 	int rx = nLines / 2, ry = nColumns / 2;
 	bool first = true;
-	map[rx][ry] = '#';
+	map[rx][ry] = true;
 
 	while (integers[currPos] != 99)
 	{
-		setPosModes(integers, currPos, relativeBase, posMode1, posMode2, posMode3);
+		setPosModes(integers, currPos, relativeBase, posMode1, posMode2, posMode3, integers[currPos] % 100);
 
 		switch (integers[currPos] % 100)
 		{
@@ -179,11 +182,11 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, int inp
 			break;
 
 		case 4:
-			// std::cout << integers[posMode1];
+			// std::cout << integers[posMode1] << " ";
 			if (first)
 			{
 				map[rx][ry] = integers[posMode1];
-				visit[rx][ry] = 1;
+				visit[rx][ry] = true;
 				first = false;
 			}
 			else
@@ -234,8 +237,8 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-	std::vector<long long> integers(100000000);
-	int input = 1;
+	std::vector<long long> integers;
+	bool input = true;
 
 	readInput(in, integers);
 	intCodeProgram(out, integers, input);
