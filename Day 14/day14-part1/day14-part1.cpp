@@ -4,6 +4,8 @@
 class reaction
 {
 public:
+	reaction(long long outputQuant = 0) : outputQuant(outputQuant) {}
+public:
 	std::vector<std::string> inputChemical;
 	std::vector<long long> inputQuant;
 	std::string outputChemical;
@@ -24,8 +26,8 @@ public:
 void readInput(std::fstream& in, std::vector<reaction>& reactions)
 {
 	reaction currReaction;
-	long long inputQuant = 0;
 	std::string aux;
+	long long inputQuant = 0;
 
 	while (in >> inputQuant)
 	{
@@ -47,8 +49,8 @@ void readInput(std::fstream& in, std::vector<reaction>& reactions)
 			else
 			{
 				inputQuant = stoi(aux);
+				currReaction.inputQuant.push_back(inputQuant);
 			}
-			currReaction.inputQuant.push_back(inputQuant);
 		}
 		in >> currReaction.outputQuant;
 		in >> currReaction.outputChemical;
@@ -103,17 +105,17 @@ int produceFuel(const std::vector<reaction>& react)
 		}
 
 
-		for (int currReact = 0; currReact < react.size(); currReact++)
+		for (const auto& currReact : react)
 		{
-			if (currNeededChemical.outputChemical == react[currReact].outputChemical)
+			if (currNeededChemical.outputChemical == currReact.outputChemical)
 			{
-				quantNeeded = currNeededChemical.outputQuant / react[currReact].outputQuant;
-				while (currNeededChemical.outputQuant > react[currReact].outputQuant* quantNeeded)
+				quantNeeded = currNeededChemical.outputQuant / currReact.outputQuant;
+				while (currNeededChemical.outputQuant > currReact.outputQuant* quantNeeded)
 				{
 					quantNeeded++;
 				}
 
-				if (react[currReact].outputQuant * quantNeeded > currNeededChemical.outputQuant)
+				if (currReact.outputQuant * quantNeeded > currNeededChemical.outputQuant)
 				{
 					findLeftover = leftovers.find(currNeededChemical);
 
@@ -121,20 +123,20 @@ int produceFuel(const std::vector<reaction>& react)
 					{
 						auxOutputQuant = (*findLeftover).outputQuant;
 						leftovers.erase(findLeftover);
-						leftovers.insert(neededChemical(currNeededChemical.outputChemical, auxOutputQuant + react[currReact].outputQuant*quantNeeded - currNeededChemical.outputQuant));
+						leftovers.insert(neededChemical(currNeededChemical.outputChemical, auxOutputQuant + currReact.outputQuant * quantNeeded - currNeededChemical.outputQuant));
 					}
 					else
 					{
-						leftovers.insert(neededChemical(currNeededChemical.outputChemical, react[currReact].outputQuant * quantNeeded - currNeededChemical.outputQuant));
+						leftovers.insert(neededChemical(currNeededChemical.outputChemical, currReact.outputQuant * quantNeeded - currNeededChemical.outputQuant));
 					}
 				}
 
-				for (int currInputChemical = 0; currInputChemical < react[currReact].inputChemical.size(); currInputChemical++)
+				for (int currInputChemical = 0; currInputChemical < currReact.inputChemical.size(); currInputChemical++)
 				{
-					neededChemicals.push(neededChemical(react[currReact].inputChemical[currInputChemical], quantNeeded * react[currReact].inputQuant[currInputChemical]));
-					if (react[currReact].inputChemical[currInputChemical] == "ORE")
+					neededChemicals.push(neededChemical(currReact.inputChemical[currInputChemical], quantNeeded * currReact.inputQuant[currInputChemical]));
+					if (currReact.inputChemical[currInputChemical] == "ORE")
 					{
-						countORE += (long long)quantNeeded * react[currReact].inputQuant[currInputChemical];
+						countORE += (long long)quantNeeded * currReact.inputQuant[currInputChemical];
 					}
 				}
 				break;
