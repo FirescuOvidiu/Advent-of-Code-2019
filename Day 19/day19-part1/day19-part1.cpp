@@ -110,7 +110,7 @@ bool intCodeProgram(std::fstream& out, std::vector<long long> integers, long lon
 			break;
 
 		case 3:
-			input = input == -1 ? x : y;
+			input = (input == -1) ? x : y;
 			integers[posMode1] = input;
 			currPos = currPos + 2;
 			break;

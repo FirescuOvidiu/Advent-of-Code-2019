@@ -1,31 +1,6 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-class Coordinate
-{
-public:
-	Coordinate(int x = 0, int y = 0) : x(x), y(y) {}
-
-	static int manhattanDistance(const Coordinate& c1, const Coordinate& c2)
-	{
-		return abs(c1.x - c2.x) + abs(c1.y - c2.y);
-	}
-
-	bool operator<(const Coordinate& c) const
-	{
-		return this->x < c.x ? true : this->x == c.x ? this->y < this->x : false;
-	}
-
-	bool operator==(const Coordinate& c) const
-	{
-		return ((this->x == c.x) && (this->y == c.y));
-	}
-
-public:
-	int x, y;
-};
-
-
 void readInput(std::fstream& in, std::vector<long long>& integers)
 {
 	long long number = 0;
@@ -181,13 +156,11 @@ int main()
 	std::fstream out("output.out", std::fstream::out);
 	std::vector<long long> integers;
 	long long input = -1;
+	int x = 5, y = 5;
 
 	readInput(in, integers);
 
-	int x = 5, y = 5;
-	bool meetCriterias = false;
-
-	while (!meetCriterias)
+	while (true)
 	{
 		if ((!intCodeProgram(out, integers, input, x, y)) || (!intCodeProgram(out, integers, input, x, y + 99)))
 		{
@@ -204,8 +177,9 @@ int main()
 			y++;
 			continue;
 		}
+
 		out << x * 10000 + y;
-		meetCriterias = true;
+		break;
 	}
 	
 	in.close();
