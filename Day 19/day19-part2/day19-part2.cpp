@@ -189,17 +189,7 @@ int main()
 
 	while (!meetCriterias)
 	{
-		if (!intCodeProgram(out, integers, input, x, y))
-		{
-			x++;
-			while (!intCodeProgram(out, integers, input, x, y))
-			{
-				y++;
-			}
-			continue;
-		}
-
-		if (!intCodeProgram(out, integers, input, x, y + 99))
+		if ((!intCodeProgram(out, integers, input, x, y)) || (!intCodeProgram(out, integers, input, x, y + 99)))
 		{
 			x++;
 			while (!intCodeProgram(out, integers, input, x, y))
