@@ -1,16 +1,6 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-class Coordinate
-{
-public:
-	Coordinate(int x = 0, int y = 0) : x(x), y(y) {}
-
-public:
-	int x, y;
-};
-
-
 void readInput(std::fstream& in, std::vector<long long>& integers)
 {
 	long long number = 0;
@@ -140,7 +130,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const l
 				break;
 			}
 			currPos = currPos + 2;
-
 			break;
 
 		case 5:
@@ -170,74 +159,26 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const l
 }
 
 
-bool checkInMap(int x, int y, int lines, int columns)
-{
-	return x >= 0 && y >= 0 && x < lines && y < columns;
-}
-
 int findSumScaffoldIntersections(const std::vector<std::vector<char>>& map)
 {
 	int lines = map.size() - 1, columns = map[0].size();
-	std::vector<std::vector<int>> visit(lines, std::vector<int>(columns, 0));
-	int dirX[] = { -1,0,0,1 };
-	int dirY[] = { 0,-1,1,0 };
-	Coordinate robot(0, 0);
-
-	for (int l = 0; l < lines; l++)
-	{
-		for (int c = 0; c < columns; c++)
-		{
-			if ((map[l][c] != '.') && (map[l][c] != '#'))
-			{
-				robot.x = l;  robot.y = c;
-				l = lines;	c = columns;
-			}
-		}
-	}
-
-	for (int l = 0; l < lines; l++)
-	{
-		for (int c = 0; c < columns; c++)
-		{
-			std::cout << map[l][c];
-		}
-		std::cout << "\n";
-	}
-
 	int sum = 0;
-	bool finish = false;
 
-	while (!finish)
+	for (int x = 1; x < lines - 1; x++)
 	{
-
-		finish = true;
-		for (int i = 0; i < 4; i++)
+		for (int y = 1; y < columns - 1; y++)
 		{
-			if (checkInMap(robot.x + dirX[i], robot.y + dirY[i], lines, columns) &&
-				(map[dirX[i] + robot.x][dirY[i] + robot.y] == '#') && (!visit[dirX[i] + robot.x][dirY[i] + robot.y]))
+			if ((map[x][y] == '#') && (map[x + 1][y] == '#') && (map[x - 1][y] == '#') 
+				&& (map[x][y + 1] == '#') && (map[x][y - 1] == '#'))
 			{
-				while (checkInMap(robot.x + dirX[i], robot.y + dirY[i], lines, columns) &&
-					(map[robot.x + dirX[i]][robot.y + dirY[i]] == '#'))
-				{
-					robot.x += dirX[i];
-					robot.y += dirY[i];
-					if (visit[robot.x][robot.y])
-					{
-						sum += robot.x * robot.y;
-					}
-					else
-					{
-						visit[robot.x][robot.y] = true;
-					}
-				}
-				finish = false;
-				break;
+				sum += x * y;
 			}
 		}
 	}
 
 	return sum;
 }
+
 
 int main()
 {
