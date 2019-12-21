@@ -40,7 +40,7 @@ void readInput(std::fstream& in, std::vector<std::vector<char>>& map)
 }
 
 
-void findPortals(const std::vector<std::vector<char>>& map, std::vector<std::tuple<std::string, Coordinate, Coordinate>>& portals
+void findPortals(const std::vector<std::vector<char>>& map, std::map<std::string, std::pair<Coordinate, Coordinate>>& portals
 	, Coordinate& start, Coordinate& end)
 {
 	int dirX[] = { -1,0,0,1 };
@@ -48,7 +48,6 @@ void findPortals(const std::vector<std::vector<char>>& map, std::vector<std::tup
 	std::string portalName;
 	Coordinate portalCoord;
 	bool foundCoordinate = true;
-	bool foundPortal = true;
 
 	for (int x = 0; x < map.size(); x++)
 	{
@@ -101,41 +100,24 @@ void findPortals(const std::vector<std::vector<char>>& map, std::vector<std::tup
 				}
 			}
 
-			foundPortal = false;
-			for (auto& portal : portals)
+			std::sort(portalName.begin(), portalName.end());
+			if (portals.find(portalName) != portals.end())
 			{
-				std::sort(portalName.begin(), portalName.end());
-				if (std::get<0>(portal) == portalName)
-				{
-					std::get<2>(portal) = portalCoord;
-					foundPortal = true;
-					break;
-				}
+				portals[portalName].second = portalCoord;
 			}
-
-			if (!foundPortal)
+			else
 			{
-				std::sort(portalName.begin(),portalName.end());
-				portals.push_back(std::make_tuple(portalName, portalCoord, portalCoord));
+				portals[portalName].first = portalCoord;
 			}
 		}
 	}
 
-	for (auto& portal : portals)
-	{
-		if (std::get<0>(portal) == "AA")
-		{
-			start = std::get<1>(portal);
-		}
-		if (std::get<0>(portal) == "ZZ")
-		{
-			end = std::get<1>(portal);
-		}
-	}
+	start = portals["AA"].first;
+	end = portals["ZZ"].first;
 }
 
 
-int BFS(const std::vector<std::vector<char>>& map,const std::vector<std::tuple<std::string, Coordinate, Coordinate>>& portals,
+int BFS(const std::vector<std::vector<char>>& map,std::map<std::string, std::pair<Coordinate, Coordinate>>& portals,
 	const Coordinate& start, const Coordinate& end)
 {
 	std::vector<std::vector<bool>> visit(map.size(), std::vector<bool>(map[0].size()));
@@ -189,29 +171,16 @@ int BFS(const std::vector<std::vector<char>>& map,const std::vector<std::tuple<s
 					}
 				}
 
-				for (const auto& portal : portals)
+				std::sort(portalName.begin(), portalName.end());
+				if (curr == portals[portalName].first)
 				{
-					std::sort(portalName.begin(), portalName.end());
-
-					if (std::get<0>(portal) != portalName)
-					{
-						continue;
-					}
-
-					first = std::get<1>(portal);
-					second = std::get<2>(portal);
-
-					if (curr == first)
-					{
-						q.push(Coordinate(second.x, second.y, curr.steps + 1));
-						visit[second.x][second.y] = true;
-					}
-					else
-					{
-						q.push(Coordinate(first.x, first.y, curr.steps + 1));
-						visit[first.x][first.y] = true;
-					}
-					break;
+					q.push(Coordinate(portals[portalName].second.x, portals[portalName].second.y, curr.steps + 1));
+					visit[portals[portalName].second.x][portals[portalName].second.y] = true;
+				}
+				else
+				{
+					q.push(Coordinate(portals[portalName].first.x, portals[portalName].first.y, curr.steps + 1));
+					visit[portals[portalName].first.x][portals[portalName].first.y] = true;
 				}
 			}
 		}
@@ -223,8 +192,8 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
+	std::map<std::string, std::pair<Coordinate, Coordinate>> portals;
 	std::vector<std::vector<char>> map;
-	std::vector<std::tuple<std::string, Coordinate, Coordinate>> portals;
 	Coordinate start, end;
 
 	readInput(in, map);
