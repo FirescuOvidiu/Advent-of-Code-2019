@@ -1,6 +1,18 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
+class NIC
+{
+public:
+	NIC(std::vector<long long> integers = {}, long long currPos = 0) : integers(integers), currPos(currPos) {}
+
+public:
+	std::vector<long long> integers;
+	std::queue<long long> q;
+	long long currPos;
+};
+
+
 void readInput(std::fstream& in, std::vector<long long>& integers)
 {
 	long long number = 0;
@@ -12,29 +24,6 @@ void readInput(std::fstream& in, std::vector<long long>& integers)
 		in >> aux;
 	}
 }
-
-
-class Coordinate
-{
-public:
-	Coordinate(long long x = 0, long long y = 0, long long address = 0, int nextInstruction = 3) : x(x), y(y), address(address), nextInstruction(nextInstruction) {}
-
-public:
-	long long x, y, address;
-	int nextInstruction;
-};
-
-
-class NIC
-{
-public:
-	NIC(std::vector<long long> integers = {}, long long currPos = 0) : integers(integers), currPos(currPos) {}
-
-public:
-	std::vector<long long> integers;
-	std::queue<Coordinate> q;
-	long long currPos;
-};
 
 
 void setPosModes(std::vector<long long>& integers, long long currPos, long long relativeBase, long long& posMode1, long long& posMode2, long long& posMode3, long long opcode)
@@ -116,14 +105,16 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 	long long posMode3 = 0;
 	long long relativeBase = 0;
 
-	Coordinate output(0, 0, 0, 0);
-	Coordinate NAT, lastNAT;
+	long long outputAddress = 0;
+	int nextInstruction = 0;
+	std::vector<int> NAT;
+	long long lastNATq = 0;
+	bool stateIdle = false;
 	int it = 0;
-	bool stateIdle = true;
 
 	for (int i = 0; i < 50; i++)
 	{
-		NIC[i].q.push(Coordinate(0, 0, 3));
+		NIC[i].q.push(i);
 	}
 
 	while (true)
@@ -157,23 +148,8 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 					}
 					else
 					{
-						switch (NIC[i].q.front().nextInstruction)
-						{
-						case 1:
-							input = NIC[i].q.front().x;
-							NIC[i].q.front().nextInstruction++;
-							break;
-
-						case 2:
-							input = NIC[i].q.front().y;
-							NIC[i].q.pop();
-							break;
-
-						default:
-							input = i;
-							NIC[i].q.pop();
-							break;
-						}
+						input = NIC[i].q.front();
+						NIC[i].q.pop();
 					}
 
 					integers[posMode1] = input;
@@ -181,32 +157,28 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 					break;
 
 				case 4:
-					switch (output.nextInstruction)
+					if (nextInstruction == 0)
 					{
-					case 0:
-						output.address = integers[posMode1];
-						output.nextInstruction++;
-						break;
 
-					case 1:
-						output.x = integers[posMode1];
-						output.nextInstruction++;
-						break;
-
-					case 2:
-						output.nextInstruction--;
-						output.y = integers[posMode1];
-
-						if (output.address < 50)
+						outputAddress = integers[posMode1];
+						nextInstruction++;
+					}
+					else
+					{
+						if (outputAddress < 50)
 						{
-							NIC[output.address].q.push(output);
+							NIC[outputAddress].q.push(integers[posMode1]);
 						}
 						else
 						{
-							NAT = output;
+							if (NAT.size() == 2)
+							{
+								NAT.clear();
+							}
+							NAT.push_back(integers[posMode1]);
 						}
 
-						output.nextInstruction = 0;
+						nextInstruction = (nextInstruction + 1) % 3;
 					}
 
 					currPos = currPos + 2;
@@ -257,13 +229,15 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 
 		if (stateIdle)
 		{
-			if (lastNAT.y == NAT.y)
+			if (lastNATq == NAT[1])
 			{
-				out << NAT.y;
+				out << NAT[1];
 				return;
 			}
-			lastNAT = NAT;
-			NIC[0].q.push(NAT);
+
+			NIC[0].q.push(NAT[0]);
+			NIC[0].q.push(NAT[1]);
+			lastNATq = NAT[1];
 		}
 	}
 }
