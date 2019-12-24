@@ -27,15 +27,15 @@ bool checkInMap(int x, int y, int lines, int columns)
 
 int numberBugs(std::vector<std::vector<char>>& map)
 {
-	std::vector< std::vector<std::vector<char>>> levels;
 	std::vector<std::vector<char>> emptyGrid(5, std::vector<char>(5, '.'));
+	std::vector< std::vector<std::vector<char>>> levels;
 	std::vector<int> dx{ -1,0,0,1 };
 	std::vector<int> dy{ 0,-1,1,0 };
-	int bugs{ 0 };
-	int countBugs = 0;
-
+	int bugs{ 0 }, countBugs{ 0 };
+	int lowestDepth{ 499 }, highestDepth{ 501 };
 	emptyGrid[2][2] = '?';
 	map[2][2] = '?';
+
 	for (int i = 0; i < 500; i++)
 	{
 		levels.push_back(emptyGrid);
@@ -51,7 +51,7 @@ int numberBugs(std::vector<std::vector<char>>& map)
 
 	for (int it = 0; it < 200; it++)
 	{
-		for (int lvl = 1; lvl < 1000; lvl++)
+		for (int lvl = lowestDepth; lvl <= highestDepth; lvl++)
 		{
 			currMap = levels[lvl];
 			for (int i = 0; i < 5; i++)
@@ -137,6 +137,8 @@ int numberBugs(std::vector<std::vector<char>>& map)
 			}
 			currLevels[lvl] = currMap;
 		}
+		lowestDepth--;
+		highestDepth++;
 		levels = currLevels;
 	}
 
