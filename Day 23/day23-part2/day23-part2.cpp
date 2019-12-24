@@ -110,7 +110,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 	std::vector<int> NAT;
 	long long lastNATq = 0;
 	bool stateIdle = false;
-	int it = 0;
 
 	for (int i = 0; i < 50; i++)
 	{
@@ -123,7 +122,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 		{
 			currPos = NIC[i].currPos;
 			integers = NIC[i].integers;
-			it = 0;
 
 			while (integers[currPos] != 99)
 			{
@@ -144,7 +142,16 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 				case 3:
 					if (NIC[i].q.empty())
 					{
+						// The incoming packet queue is empty
 						input = -1;
+						integers[posMode1] = input;
+						currPos = currPos + 2;
+						// Save the state of the NIC computer
+						NIC[i].currPos = currPos;
+						NIC[i].integers = integers;
+						// Move to the next computer
+						integers[currPos] = 99;
+						break;
 					}
 					else
 					{
@@ -159,7 +166,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 				case 4:
 					if (nextInstruction == 0)
 					{
-
 						outputAddress = integers[posMode1];
 						nextInstruction++;
 					}
@@ -207,13 +213,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 					currPos = currPos + 2;
 					break;
 				}
-
-				if (it++ > 10000)
-				{
-					NIC[i].currPos = currPos;
-					NIC[i].integers = integers;
-					break;
-				}
 			}
 		}
 
@@ -227,7 +226,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long> integers, std::vec
 			}
 		}
 
-		if (stateIdle)
+		if ((stateIdle) && (!NAT.empty()))
 		{
 			if (lastNATq == NAT[1])
 			{
