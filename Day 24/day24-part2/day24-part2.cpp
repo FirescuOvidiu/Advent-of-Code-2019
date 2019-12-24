@@ -25,23 +25,23 @@ bool checkInMap(int x, int y, int lines, int columns)
 }
 
 
-int numberBugs(std::vector<std::vector<char>>& map)
+int numberBugs(std::vector<std::vector<char>>& map, const int minutes)
 {
 	std::vector<std::vector<char>> emptyGrid(5, std::vector<char>(5, '.'));
 	std::vector< std::vector<std::vector<char>>> levels;
 	std::vector<int> dx{ -1,0,0,1 };
 	std::vector<int> dy{ 0,-1,1,0 };
 	int bugs{ 0 }, countBugs{ 0 };
-	int lowestDepth{ 499 }, highestDepth{ 501 };
+	int lowestDepth{ minutes }, highestDepth{ minutes + 2 };
 	emptyGrid[2][2] = '?';
 	map[2][2] = '?';
 
-	for (int i = 0; i < 500; i++)
+	for (int i = 0; i <= minutes; i++)
 	{
 		levels.push_back(emptyGrid);
 	}
 	levels.push_back(map);
-	for (int i = 0; i < 500; i++)
+	for (int i = 0; i <= minutes; i++)
 	{
 		levels.push_back(emptyGrid);
 	}
@@ -49,7 +49,7 @@ int numberBugs(std::vector<std::vector<char>>& map)
 	std::vector< std::vector<std::vector<char>>> currLevels(levels);
 	std::vector<std::vector<char>> currMap(emptyGrid);
 
-	for (int it = 0; it < 200; it++)
+	for (int it = 0; it < minutes; it++)
 	{
 		for (int lvl = lowestDepth; lvl <= highestDepth; lvl++)
 		{
@@ -142,7 +142,7 @@ int numberBugs(std::vector<std::vector<char>>& map)
 		levels = currLevels;
 	}
 
-	for (int i = 0; i <= 1000; i++)
+	for (int i = 0; i <= minutes * 2 + 1; i++)
 	{
 		for (int j = 0; j < 5; j++)
 		{
@@ -165,10 +165,11 @@ int main()
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
 	std::vector<std::vector<char>> map;
+	const int minutes = 200;
 
 	readInput(in, map);
 
-	out << numberBugs(map);
+	out << numberBugs(map, minutes);
 
 	in.close();
 	out.close();
