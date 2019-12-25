@@ -3,7 +3,6 @@
 
 void readInput(std::fstream& in, std::vector<std::vector<char>>& map)
 {
-	std::vector<std::vector<char>> m;
 	std::vector<char> v;
 	std::string line;
 
