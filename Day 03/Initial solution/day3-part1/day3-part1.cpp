@@ -11,9 +11,9 @@ public:
 		return abs(c1.x - c2.x) + abs(c1.y - c2.y);
 	}
 
-	bool operator==(const Coordinate& c)
+	bool operator<(const Coordinate& c) const
 	{
-		return ((this->x == c.x) && (this->y == c.y));
+		return this->x < c.x ? true : this->x == c.x ? this->y < c.y : false;
 	}
 
 public:
@@ -22,8 +22,8 @@ public:
 
 
 
-// Saving every coordinate of the first path into a list
-void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
+// Saving every coordinate of the first path into a set
+void readInput(std::fstream& in, std::set<Coordinate>& firstWireCoord)
 {
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
@@ -37,7 +37,7 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.x--;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.insert(currPos);
 			}
 			break;
 
@@ -45,7 +45,7 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.y--;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.insert(currPos);
 			}
 			break;
 
@@ -53,7 +53,7 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.y++;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.insert(currPos);
 			}
 			break;
 
@@ -61,11 +61,8 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.x++;
-				firstWireCoord.push_back(Coordinate(currPos.x, currPos.y));
+				firstWireCoord.insert(currPos);
 			}
-			break;
-
-		default:
 			break;
 		}
 		in >> aux;
@@ -73,11 +70,11 @@ void readInput(std::fstream& in, std::list<Coordinate>& firstWireCoord)
 }
 
 
-// Parsing every coordinate of the second wire and checking if that coordinate is in the list with the coordinates of the first wire
+// Parsing every coordinate of the second wire and checking if that coordinate is in the set with the coordinates of the first wire
 // If it is, it means we hit an intersection, we save that coord into a vector
-void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::vector<Coordinate>& intersections)
+void readInput2(std::fstream& in,const std::set<Coordinate>& firstWireCoord, std::vector<Coordinate>& intersections)
 {
-	std::list<Coordinate>::iterator it = firstWireCoord.end();
+	std::set<Coordinate>::iterator it = firstWireCoord.end();
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
 	int number = 0;
@@ -90,9 +87,9 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.x--;
-				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
+				if ((it = firstWireCoord.find(currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(currPos);
 				}
 			}
 			break;
@@ -101,9 +98,9 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.y--;
-				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
+				if ((it = firstWireCoord.find(currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(currPos);
 				}
 			}
 			break;
@@ -112,9 +109,9 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.y++;
-				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
+				if ((it = firstWireCoord.find(currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(currPos);
 				}
 			}
 			break;
@@ -123,18 +120,32 @@ void readInput2(std::fstream& in, std::list<Coordinate>& firstWireCoord, std::ve
 			for (int i = 1; i <= number; i++)
 			{
 				currPos.x++;
-				if ((it = std::find(firstWireCoord.begin(), firstWireCoord.end(), currPos)) != firstWireCoord.end())
+				if ((it = firstWireCoord.find(currPos)) != firstWireCoord.end())
 				{
-					intersections.push_back(Coordinate(currPos.x, currPos.y));
+					intersections.push_back(currPos);
 				}
 			}
-			break;
-
-		default:
 			break;
 		}
 		in >> aux;
 	}
+}
+
+
+// Finding the closest intersection from the central port (0,0)
+int findDistToClosestIntersection(const std::vector<Coordinate>& intersections)
+{
+	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
+
+	for (const auto& intersection : intersections)
+	{
+		if (Coordinate::manhattanDistance(Coordinate(0, 0), intersection) < minDist)
+		{
+			minDist = Coordinate::manhattanDistance(Coordinate(0, 0), intersection);
+		}
+	}
+
+	return minDist;
 }
 
 
@@ -144,25 +155,13 @@ int main()
 	std::fstream in2("input2.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
 	std::vector<Coordinate> intersections;
-	std::list<Coordinate> firstWireCoord;
+	std::set<Coordinate> firstWireCoord;
 
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
-	// Calculating the distance from the center point to every intersection
-	// And saving the minimum distance into a variable
-	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
-	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
-	{
-		if (Coordinate::manhattanDistance(Coordinate(0, 0), (*it)) < minDist)
-		{
-			minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*it));
-		}
-	}
-
-	out << minDist;
+	out << findDistToClosestIntersection(intersections);
 
 	in.close();
 	out.close();
 }
-

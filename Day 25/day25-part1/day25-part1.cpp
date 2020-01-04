@@ -1,7 +1,7 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-void readInput(std::fstream& in, std::vector<long long>& integers)
+void readInput(std::fstream & in, std::vector<long long> & integers)
 {
 	long long number = 0;
 	char aux{};
