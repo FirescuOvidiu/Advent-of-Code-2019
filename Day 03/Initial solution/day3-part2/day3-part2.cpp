@@ -6,11 +6,6 @@ class Coordinate
 public:
 	Coordinate(int x = 0, int y = 0, int stepts = 0) : x(x), y(y), steps(stepts) {}
 
-	static int manhattanDistance(const Coordinate& c1, const Coordinate& c2)
-	{
-		return abs(c1.x - c2.x) + abs(c1.y - c2.y);
-	}
-
 	bool operator<(const Coordinate& c) const
 	{
 		return this->x < c.x ? true : this->x == c.x ? this->y < c.y : false;

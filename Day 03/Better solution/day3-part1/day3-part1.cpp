@@ -11,11 +11,6 @@ public:
 		return abs(c1.x - c2.x) + abs(c1.y - c2.y);
 	}
 
-	bool operator==(const Coordinate& c)
-	{
-		return ((this->x == c.x) && (this->y == c.y));
-	}
-
 public:
 	int x, y;
 };
@@ -67,9 +62,6 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 			firstWireCoord.push_back(Segment(Coordinate(currPos.x + 1, currPos.y), Coordinate(currPos.x + number, currPos.y), false));
 			currPos.x += number;
 			break;
-
-		default:
-			break;
 		}
 		in >> aux;
 	}
@@ -78,7 +70,7 @@ void readInput(std::fstream& in, std::vector<Segment>& firstWireCoord)
 
 // We calculate the segments of the second wire and check for every segment if it intersects the segments from the first wire
 // If it does we add the coordinate of the intersection to a vector (see checkIntersection function)
-void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vector<Coordinate>& intersections)
+void readInput2(std::fstream& in, const std::vector<Segment>& firstWireCoord, std::vector<Coordinate>& intersections)
 {
 	Coordinate currPos(0, 0);
 	char dir{}, aux{};
@@ -89,39 +81,36 @@ void readInput2(std::fstream& in, std::vector<Segment>& firstWireCoord, std::vec
 		switch (dir)
 		{
 		case 'U':
-			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
+			for (const auto& segment : firstWireCoord)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x - number, currPos.y), Coordinate(currPos.x - 1, currPos.y), false), segment, intersections);
 			}
 			currPos.x -= number;
 			break;
 
 		case 'L':
-			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
+			for (const auto& segment : firstWireCoord)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x, currPos.y - number), Coordinate(currPos.x, currPos.y - 1), true), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x, currPos.y - number), Coordinate(currPos.x, currPos.y - 1), true), segment, intersections);
 			}
 			currPos.y -= number;
 			break;
 
 
 		case 'R':
-			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
+			for (const auto& segment : firstWireCoord)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true),(*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x, currPos.y + 1), Coordinate(currPos.x, currPos.y + number), true), segment, intersections);
 			}
 			currPos.y += number;
 			break;
 
 		case 'D':
-			for (std::vector<Segment>::iterator currSegment = firstWireCoord.begin(); currSegment != firstWireCoord.end(); currSegment++)
+			for (const auto& segment : firstWireCoord)
 			{
-				checkIntersection(Segment(Coordinate(currPos.x + 1, currPos.y), Coordinate(currPos.x + number, currPos.y), false), (*currSegment), intersections);
+				checkIntersection(Segment(Coordinate(currPos.x + 1, currPos.y), Coordinate(currPos.x + number, currPos.y), false), segment, intersections);
 			}
 			currPos.x += number;
-			break;
-
-		default:
 			break;
 		}
 		in >> aux;
@@ -200,6 +189,23 @@ void checkIntersection(Segment s1, Segment s2, std::vector<Coordinate>& intersec
 }
 
 
+// Finding the closest intersection from the central port (0,0)
+int findDistToClosestIntersection(const std::vector<Coordinate>& intersections)
+{
+	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
+
+	for (const auto& intersection : intersections)
+	{
+		if (Coordinate::manhattanDistance(Coordinate(0, 0), intersection) < minDist)
+		{
+			minDist = Coordinate::manhattanDistance(Coordinate(0, 0), intersection);
+		}
+	}
+
+	return minDist;
+}
+
+
 int main()
 {
 	std::fstream in("input.in", std::fstream::in);
@@ -211,18 +217,7 @@ int main()
 	readInput(in, firstWireCoord);
 	readInput2(in2, firstWireCoord, intersections);
 
-	// Calculating the distance from the center point to every intersection
-	// And saving the minimum distance into a variable
-	int minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*(intersections.begin())));
-	for (auto it = intersections.begin() + 1; it != intersections.end(); it++)
-	{
-		if (Coordinate::manhattanDistance(Coordinate(0, 0), (*it)) < minDist)
-		{
-			minDist = Coordinate::manhattanDistance(Coordinate(0, 0), (*it));
-		}
-	}
-
-	out << minDist;
+	out << findDistToClosestIntersection(intersections);
 
 	in.close();
 	out.close();
