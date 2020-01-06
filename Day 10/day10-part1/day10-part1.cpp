@@ -173,7 +173,10 @@ int findMaxAsteroids(const std::vector<std::vector<char>>& map)
 					asteroidBlocked.y += distance.y;
 				}
 			}
-			maxAsteroids = std::max(maxAsteroids, countAsteroids);
+			if (countAsteroids > maxAsteroids)
+			{
+				maxAsteroids = countAsteroids;
+			}
 		}
 	}
 	return maxAsteroids;
