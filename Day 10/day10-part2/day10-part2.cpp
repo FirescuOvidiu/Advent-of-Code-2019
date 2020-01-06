@@ -188,6 +188,25 @@ Coordinate findCoordMaxAsteroids(const std::vector<std::vector<char>>& map)
 }
 
 
+void bubble(std::vector<Coordinate> & final, int a, int b)
+{
+	if (final.size() <= 1)
+	{
+		return;
+	}
+	int i, j;
+	for (i = 0; i < final.size() - 1; i++)
+
+		// Last i elements are already in place  
+		for (j = 0; j < final.size() - i - 1; j++)
+			if ((atan2(final[j].x - a, final[j].y - b) * 180 / 3.1415 >=
+				atan2(final[j + 1].x - a, final[j + 1].y - b) * 180 / 3.1415))
+			{
+				std::swap(final[j], final[j + 1]);
+			}
+}
+
+
 bool sortingRule(const Coordinate& firstAst, const Coordinate& secondAst)
 {
 	return (atan2(firstAst.x - startAsteroid.x, firstAst.y - startAsteroid.y) * 180 / 3.1415 <=
@@ -202,7 +221,7 @@ Coordinate find200thAsteroid(std::vector<std::vector<char>>& map, const Coordina
 	std::vector<std::vector<bool>> mapBlockedAsteroids(nLines, std::vector<bool>(nColumns));
 	std::vector<Coordinate> sortedAsteroids, visibleAsteroids;
 	Coordinate asteroidBlocked, distance;
-	int count = 0, it = 0;
+	int countAsteroids = 0, it = 0;
 
 	while (true)
 	{
@@ -249,8 +268,8 @@ Coordinate find200thAsteroid(std::vector<std::vector<char>>& map, const Coordina
 		for (int currAst = it; currAst < visibleAsteroids.size() + it; currAst++)
 		{
 			currAst = currAst % visibleAsteroids.size();
-			count++;
-			if (count == 200)
+			countAsteroids++;
+			if (countAsteroids == 200)
 			{
 				return visibleAsteroids[currAst];
 			}
@@ -275,6 +294,7 @@ int main()
 	Coordinate Asteroid200 = find200thAsteroid(map, startAsteroid);
 
 	out << Asteroid200.y * 100 + Asteroid200.x;
+
 	in.close();
 	out.close();
 }
