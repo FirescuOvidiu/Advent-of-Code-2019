@@ -27,6 +27,52 @@ void readInput(std::fstream& in, std::vector<int>& integers)
 }
 
 
+void setPosModes(const std::vector<int>& integers, int currPos, int& posMode1, int& posMode2, int& posMode3)
+{
+	switch (integers[currPos] / 100 % 10)
+	{
+	case 0:
+		if (currPos + 1 < integers.size())
+		{
+			posMode1 = integers[currPos + 1];
+		}
+		break;
+
+	case 1:
+		posMode1 = currPos + 1;
+		break;
+	}
+
+	switch (integers[currPos] / 1000 % 10)
+	{
+	case 0:
+		if (currPos + 2 < integers.size())
+		{
+			posMode2 = integers[currPos + 2];
+		}
+		break;
+
+	case 1:
+		posMode2 = currPos + 2;
+		break;
+	}
+
+	switch (integers[currPos] / 10000 % 10)
+	{
+	case 0:
+		if (currPos + 3 < integers.size())
+		{
+			posMode3 = integers[currPos + 3];
+		}
+		break;
+
+	case 1:
+		posMode3 = currPos + 3;
+		break;
+	}
+}
+
+
 void intCodeProgram(std::fstream& out, std::vector<int> integers, std::vector<Amplifiers> amplifiers, int& output)
 {
 	int currAmplifier = 0;
@@ -37,9 +83,10 @@ void intCodeProgram(std::fstream& out, std::vector<int> integers, std::vector<Am
 
 	while (integers[currPos] != 99)
 	{
-		posMode1 = (integers[currPos] / 100 % 10 == 1) ? currPos + 1 : (currPos + 1 < integers.size()) ? integers[currPos + 1] : posMode1;
-		posMode2 = (integers[currPos] / 1000 % 10 == 1) ? currPos + 2 : (currPos + 2 < integers.size()) ? integers[currPos + 2] : posMode2;
-		posMode3 = (integers[currPos] / 10000 % 10 == 1) ? currPos + 3 : (currPos + 3 < integers.size()) ? integers[currPos + 3] : posMode3;
+		setPosModes(integers, currPos, posMode1, posMode2, posMode3);
+		//posMode1 = (integers[currPos] / 100 % 10 == 1) ? currPos + 1 : (currPos + 1 < integers.size()) ? integers[currPos + 1] : posMode1;
+		//posMode2 = (integers[currPos] / 1000 % 10 == 1) ? currPos + 2 : (currPos + 2 < integers.size()) ? integers[currPos + 2] : posMode2;
+		//posMode3 = (integers[currPos] / 10000 % 10 == 1) ? currPos + 3 : (currPos + 3 < integers.size()) ? integers[currPos + 3] : posMode3;
 
 		switch (integers[currPos] % 100)
 		{
@@ -73,6 +120,8 @@ void intCodeProgram(std::fstream& out, std::vector<int> integers, std::vector<Am
 			// Initialize the integers and currPos with the integers and currPosition saved in the amplifier
 			integers = amplifiers[currAmplifier].integers;
 			currPos = amplifiers[currAmplifier].currPosition;
+			// After a loop the firstInput will be equal to the secondInput (see case 3)
+			// So we need to update firstInput with the output value
 			if (amplifiers[currAmplifier].firstInput == amplifiers[currAmplifier].secondInput)
 			{
 				amplifiers[currAmplifier].firstInput = output;
@@ -118,6 +167,7 @@ int main()
 
 	do {
 		output = 0;
+
 		for (int it = 0; it < perm.size(); it++)
 		{
 			amplifiers[it].firstInput = perm[it];
@@ -125,7 +175,10 @@ int main()
 
 		intCodeProgram(out, integers, amplifiers, output);
 
-		highestSignal = std::max(highestSignal, output);
+		if (highestSignal < output)
+		{
+			highestSignal = output;
+		}
 
 	} while (std::next_permutation(perm.begin(), perm.end()));
 
