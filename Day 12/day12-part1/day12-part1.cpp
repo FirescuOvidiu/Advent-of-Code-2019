@@ -6,6 +6,12 @@ class Coordinate
 public:
 	Coordinate(int x = 0, int y = 0, int z = 0) : x(x), y(y), z(z), velx(0), vely(0), velz(0) {}
 
+	bool operator==(const Coordinate& c) const
+	{
+		return (this->x == c.x && this->y == c.y && this->z == c.z &&
+			this->velx == c.velx && this->vely == c.vely && this->velz == c.velz);
+	}
+
 public:
 	int x, y, z;
 	int velx, vely, velz;
@@ -26,28 +32,28 @@ void readInput(std::fstream& in, std::vector<Coordinate>& moons)
 
 void updateVelocity(std::vector<Coordinate>& moons, const int numberMoons)
 {
-	for (int currMoon = 0; currMoon < numberMoons; currMoon++)
+	for (auto& currMoon : moons)
 	{
-		for (int otherMoons = 0; otherMoons < numberMoons; otherMoons++)
+		for (const auto& otherMoons : moons)
 		{
 			if (currMoon == otherMoons)
 			{
 				continue;
 			}
 
-			if (moons[currMoon].x != moons[otherMoons].x)
+			if (currMoon.x != otherMoons.x)
 			{
-				moons[currMoon].velx += moons[currMoon].x < moons[otherMoons].x ? 1 : -1;
+				currMoon.velx += currMoon.x < otherMoons.x ? 1 : -1;
 			}
 
-			if (moons[currMoon].y != moons[otherMoons].y)
+			if (currMoon.y != otherMoons.y)
 			{
-				moons[currMoon].vely += moons[currMoon].y < moons[otherMoons].y ? 1 : -1;
+				currMoon.vely += currMoon.y < otherMoons.y ? 1 : -1;
 			}
 
-			if (moons[currMoon].z != moons[otherMoons].z)
+			if (currMoon.z != otherMoons.z)
 			{
-				moons[currMoon].velz += moons[currMoon].z < moons[otherMoons].z ? 1 : -1;
+				currMoon.velz += currMoon.z < otherMoons.z ? 1 : -1;
 			}
 		}
 	}
@@ -58,12 +64,12 @@ int calculateTotalEnergy(std::vector<Coordinate>& moons, const int numberMoons)
 {
 	int pot = 0, kin = 0, totalEnergy = 0;
 
-	for (int currMoon = 0; currMoon < numberMoons; currMoon++)
+	for (const auto& currMoon : moons)
 	{
 		pot = kin = 0;
 
-		pot = abs(moons[currMoon].x) + abs(moons[currMoon].y) + abs(moons[currMoon].z);
-		kin = abs(moons[currMoon].velx) + abs(moons[currMoon].vely) + abs(moons[currMoon].velz);
+		pot = abs(currMoon.x) + abs(currMoon.y) + abs(currMoon.z);
+		kin = abs(currMoon.velx) + abs(currMoon.vely) + abs(currMoon.velz);
 		totalEnergy += pot * kin;
 	}
 
@@ -82,11 +88,11 @@ int findTotalEnergy(std::vector<Coordinate>& moons, const int maxSteps)
 		updateVelocity(moons, numberMoons);
 
 		// Update position of the moons by applaying velocity
-		for (int currMoon = 0; currMoon < numberMoons; currMoon++)
+		for (auto& currMoon : moons)
 		{
-			moons[currMoon].x += moons[currMoon].velx;
-			moons[currMoon].y += moons[currMoon].vely;
-			moons[currMoon].z += moons[currMoon].velz;
+			currMoon.x += currMoon.velx;
+			currMoon.y += currMoon.vely;
+			currMoon.z += currMoon.velz;
 		}
 		steps++;
 	}
