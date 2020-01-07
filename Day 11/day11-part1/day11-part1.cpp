@@ -1,26 +1,6 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
-class Coordinate
-{
-public:
-	Coordinate(int x = 0, int y = 0) : x(x), y(y) {}
-
-	bool operator<(const Coordinate& c) const
-	{
-		return this->x < c.x ? true : this->x == c.x ? this->y < this->x : false;
-	}
-
-	bool operator==(const Coordinate& c) const
-	{
-		return ((this->x == c.x) && (this->y == c.y));
-	}
-
-public:
-	int x, y;
-};
-
-
 void readInput(std::fstream& in, std::vector<long long>& integers)
 {
 	long long number = 0;
@@ -151,7 +131,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, bool in
 			{
 				map[rx][ry] = integers[posMode1];
 				visit[rx][ry] = true;
-				first = false;
 			}
 			else
 			{
@@ -161,10 +140,9 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, bool in
 				else if (posDir == 1) rx++;
 				else if (posDir == 2) ry--;
 				else if (posDir == 3) rx--;
-
-				first = true;
 			}
 
+			first = !first;
 			currPos = currPos + 2;
 			break;
 
