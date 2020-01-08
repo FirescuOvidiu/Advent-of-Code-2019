@@ -1,145 +1,146 @@
 #include "../../AOCHeaders/stdafx.h"
 
 
+class chemical
+{
+public:
+	chemical(const std::string name = "", long long quant = 0) : name(name), quant(quant) {}
+
+	bool operator<(const chemical& c) const
+	{
+		return this->name < c.name;
+	}
+
+public:
+	std::string name;
+	long long quant;
+};
+
+
 class reaction
 {
 public:
-	reaction(long long outputQuant = 0) : outputQuant(outputQuant) {}
+	bool operator<(const reaction& r) const
+	{
+		return output.name < r.output.name;
+	}
+
 public:
-	std::vector<std::string> inputChemical;
-	std::vector<long long> inputQuant;
-	std::string outputChemical;
-	long long outputQuant;
+	std::vector<chemical> input;
+	chemical output;
 };
 
 
-class neededChemical
+void readInput(std::fstream& in, std::set<reaction>& reactions)
 {
-public:
-	neededChemical(const std::string outputChemical = "", long long outputQuant = 0) : outputChemical(outputChemical), outputQuant(outputQuant) {}
-public:
-	std::string outputChemical;
-	long long outputQuant;
-};
-
-
-void readInput(std::fstream& in, std::vector<reaction>& reactions)
-{
+	chemical currChemical;
 	reaction currReaction;
 	std::string aux;
-	long long inputQuant = 0;
 
-	while (in >> inputQuant)
+	while (in >> aux)
 	{
-		currReaction.inputQuant.push_back(inputQuant);
-		while (true)
+		while (aux != "=>")
 		{
+			currChemical.quant = stoll(aux);
+
 			in >> aux;
 			if (aux[aux.size() - 1] == ',')
 			{
 				aux.erase(aux.end() - 1);
 			}
-			currReaction.inputChemical.push_back(aux);
+			currChemical.name = aux;
+			currReaction.input.push_back(currChemical);
 
 			in >> aux;
-			if (aux == "=>")
-			{
-				break;
-			}
-			else
-			{
-				inputQuant = stoi(aux);
-				currReaction.inputQuant.push_back(inputQuant);
-			}
 		}
-		in >> currReaction.outputQuant;
-		in >> currReaction.outputChemical;
+		in >> currReaction.output.quant;
+		in >> currReaction.output.name;
 
-		reactions.push_back(currReaction);
-		currReaction.inputQuant.clear();
-		currReaction.inputChemical.clear();
+		reactions.insert(currReaction);
+
+		currReaction.input.clear();
 	}
 
 }
 
-struct comparer {
-	bool operator() (const neededChemical& n1, const neededChemical& n2) const 
-	{
-		return n1.outputChemical < n2.outputChemical;
-	}
-};
 
-
-int produceFuel(const std::vector<reaction>& react)
+long long produceFuel(const std::set<reaction>& react)
 {
-	std::queue<neededChemical> neededChemicals;
-	std::set<neededChemical, comparer> leftovers;
-	std::set<neededChemical, comparer>::iterator findLeftover;
-	neededChemical currNeededChemical;
-	long long countORE = 0, auxOutputQuant = 0, quantNeeded;
+	std::queue<chemical> neededChemical;
+	std::set<chemical> leftovers;
+	std::set<chemical>::iterator findLeftover;
+	std::set<reaction>::iterator currReact;
+	chemical currNC;
+	reaction auxReaction;
+	long long countORE = 0, auxOutputQuant = 0, quantNeeded = 0;
 
-	neededChemicals.push(neededChemical("FUEL", 1));
+	neededChemical.push(chemical("FUEL", 1));
 
-	while (!neededChemicals.empty())
+	while (!neededChemical.empty())
 	{
-		currNeededChemical = neededChemicals.front();
-		neededChemicals.pop();
+		currNC = neededChemical.front();
+		neededChemical.pop();
 
+		findLeftover = leftovers.find(currNC);
 
-		findLeftover = leftovers.find(currNeededChemical);
-
+		// If we find leftover chemical that can be used then
 		if (findLeftover != leftovers.end())
 		{
-			if (currNeededChemical.outputQuant >= (*findLeftover).outputQuant)
+			// We check if we have less or more leftover than we actually need
+			// Depending on which we update the leftovers and the current chemical
+			if (currNC.quant >= (*findLeftover).quant)
 			{
-				currNeededChemical.outputQuant -= (*findLeftover).outputQuant;
+				currNC.quant -= (*findLeftover).quant;
 				leftovers.erase(findLeftover);
 			}
 			else
 			{
-				auxOutputQuant = (*findLeftover).outputQuant;
+				auxOutputQuant = (*findLeftover).quant;
 				leftovers.erase(findLeftover);
-				leftovers.insert(neededChemical(currNeededChemical.outputChemical, auxOutputQuant - currNeededChemical.outputQuant));
+				leftovers.insert(chemical(currNC.name, auxOutputQuant - currNC.quant));
 				continue;
 			}
 		}
 
+		// Finding the needed chemical in the reactions
+		auxReaction.output.name = currNC.name;
+		currReact = react.find(auxReaction);
 
-		for (const auto& currReact : react)
+		// Calculate the quantity needed 
+		quantNeeded = currNC.quant / (*currReact).output.quant;
+		while (currNC.quant > (*currReact).output.quant* quantNeeded)
 		{
-			if (currNeededChemical.outputChemical == currReact.outputChemical)
+			quantNeeded++;
+		}
+
+		// Checking if we will have leftovers after making this chemical
+		// (*currReact).output.quant * quantNeeded represents the chemical quantity that we will make
+		if ((*currReact).output.quant * quantNeeded > currNC.quant)
+		{
+			findLeftover = leftovers.find(currNC);
+
+			if (findLeftover != leftovers.end())
 			{
-				quantNeeded = currNeededChemical.outputQuant / currReact.outputQuant;
-				while (currNeededChemical.outputQuant > currReact.outputQuant* quantNeeded)
-				{
-					quantNeeded++;
-				}
+				auxOutputQuant = (*findLeftover).quant;
+				leftovers.erase(findLeftover);
+				leftovers.insert(chemical(currNC.name, auxOutputQuant + (*currReact).output.quant * quantNeeded - currNC.quant));
+			}
+			else
+			{
+				leftovers.insert(chemical(currNC.name, (*currReact).output.quant * quantNeeded - currNC.quant));
+			}
+		}
 
-				if (currReact.outputQuant * quantNeeded > currNeededChemical.outputQuant)
-				{
-					findLeftover = leftovers.find(currNeededChemical);
-
-					if (findLeftover != leftovers.end())
-					{
-						auxOutputQuant = (*findLeftover).outputQuant;
-						leftovers.erase(findLeftover);
-						leftovers.insert(neededChemical(currNeededChemical.outputChemical, auxOutputQuant + currReact.outputQuant * quantNeeded - currNeededChemical.outputQuant));
-					}
-					else
-					{
-						leftovers.insert(neededChemical(currNeededChemical.outputChemical, currReact.outputQuant * quantNeeded - currNeededChemical.outputQuant));
-					}
-				}
-
-				for (int currInputChemical = 0; currInputChemical < currReact.inputChemical.size(); currInputChemical++)
-				{
-					neededChemicals.push(neededChemical(currReact.inputChemical[currInputChemical], quantNeeded * currReact.inputQuant[currInputChemical]));
-					if (currReact.inputChemical[currInputChemical] == "ORE")
-					{
-						countORE += (long long)quantNeeded * currReact.inputQuant[currInputChemical];
-					}
-				}
-				break;
+		// Adding the input chemical needed 
+		for (const auto& inputReact : (*currReact).input)
+		{
+			if (inputReact.name == "ORE")
+			{
+				countORE += (long long)quantNeeded * inputReact.quant;
+			}
+			else
+			{
+				neededChemical.push(chemical(inputReact.name, quantNeeded * inputReact.quant));
 			}
 		}
 	}
@@ -152,7 +153,7 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-	std::vector<reaction> reactions;
+	std::set<reaction> reactions;
 
 	readInput(in, reactions);
 	out << produceFuel(reactions);
