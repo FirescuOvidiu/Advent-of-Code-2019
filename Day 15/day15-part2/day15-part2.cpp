@@ -1,6 +1,5 @@
 #include "../../AOCHeaders/stdafx.h"
 
-
 class Coordinate
 {
 public:
@@ -9,8 +8,8 @@ public:
 public:
 	int x, y;
 };
-
-
+	
+	
 class state
 {
 public:
@@ -22,8 +21,8 @@ public:
 	long long currPos;
 	long long relativeBase;
 };
-
-
+	
+	
 class node
 {
 public:
@@ -33,8 +32,8 @@ public:
 	int x, y;
 	int steps;
 };
-
-
+	
+	
 void readInput(std::fstream& in, std::vector<long long>& integers)
 {
 	long long steps = 0;
@@ -46,8 +45,8 @@ void readInput(std::fstream& in, std::vector<long long>& integers)
 		in >> aux;
 	}
 }
-
-
+	
+	
 void setPosModes(std::vector<long long>& integers, long long currPos, long long relativeBase, long long& posMode1, long long& posMode2, long long& posMode3, long long opcode)
 {
 	if (currPos + 3 >= integers.size())
@@ -117,15 +116,14 @@ void setPosModes(std::vector<long long>& integers, long long currPos, long long 
 		integers.resize(posMode3 + 1);
 	}
 }
-
-
-void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const int input, std::vector<std::vector<char>>& map, 
+	
+	
+void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const int input, std::vector<std::vector<char>>& map,
 	Coordinate& droid, long long& currPos, long long& relativeBase, Coordinate& oxygenSystem)
 {
 	long long posMode1 = 0;
 	long long posMode2 = 0;
 	long long posMode3 = 0;
-
 
 	while (integers[currPos] != 99)
 	{
@@ -176,25 +174,22 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const i
 				switch (input)
 				{
 				case 1:
-					map[droid.x - 1][droid.y] = '.';
 					droid.x--;
 					break;
 
 				case 2:
-					map[droid.x + 1][droid.y] = '.';
 					droid.x++;
 					break;
 
 				case 3:
-					map[droid.x][droid.y - 1] = '.';
 					droid.y--;
 					break;
 
 				case 4:
-					map[droid.x][droid.y + 1] = '.';
 					droid.y++;
 					break;
 				}
+				map[droid.x][droid.y] = '.';
 				break;
 
 			case 2:
@@ -230,12 +225,12 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const i
 		}
 	}
 }
-
-
+	
+	
 Coordinate findOxygenSystem(std::fstream& out, std::vector<long long>& integers, std::vector<std::vector<char>>& map)
 {
-	int dirX[] = { 2,-1,1,0,0 };
-	int dirY[] = { 2,0,0,-1,1 };
+	std::vector<int> dirX{ 2,-1,1,0,0 };
+	std::vector<int> dirY{ 2,0,0,-1,1 };
 	long long auxCurrPos = 0;
 	long long auxRelativeBase = 0;
 	std::queue<state> states;
@@ -252,35 +247,37 @@ Coordinate findOxygenSystem(std::fstream& out, std::vector<long long>& integers,
 
 		for (int moveCommand = 1; moveCommand <= 4; moveCommand++)
 		{
-			if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] == '-')
+			if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] != '-')
 			{
-				integers = currState.integers;
-				droid = currState.droid;
-				auxCurrPos = currState.currPos;
-				auxRelativeBase = currState.relativeBase;
-
-				intCodeProgram(out, integers, moveCommand, map, droid, auxCurrPos, auxRelativeBase, oxygenSystem);
-
-				if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] == '.')
-				{
-					states.push(state(integers, Coordinate(currState.droid.x + dirX[moveCommand], currState.droid.y + dirY[moveCommand]), auxCurrPos, auxRelativeBase));
-				}
-
+				continue;
 			}
+
+			integers = currState.integers;
+			droid = currState.droid;
+			auxCurrPos = currState.currPos;
+			auxRelativeBase = currState.relativeBase;
+
+			intCodeProgram(out, integers, moveCommand, map, droid, auxCurrPos, auxRelativeBase, oxygenSystem);
+
+			if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] == '.')
+			{
+				states.push(state(integers, Coordinate(currState.droid.x + dirX[moveCommand], currState.droid.y + dirY[moveCommand]), auxCurrPos, auxRelativeBase));
+			}
+
 		}
 	}
 
 	return oxygenSystem;
 }
-
-
+	
+	
 void BFS(std::fstream& out, std::vector<std::vector<char>>& map, const Coordinate oxygenSystem)
 {
 	std::vector<std::vector<bool>> visited(5000, std::vector<bool>(5000, false));
 	std::vector<Coordinate> locationsToFill;
 	std::vector<Coordinate> nextLocationsToFill;
-	int dirX[] = { 2,-1,1,0,0 };
-	int dirY[] = { 2,0,0,-1,1 };
+	std::vector<int> dirX{ 2,-1,1,0,0 };
+	std::vector<int> dirY{ 2,0,0,-1,1 };
 	int minutes = 0;
 
 	nextLocationsToFill.push_back(oxygenSystem);
@@ -303,17 +300,15 @@ void BFS(std::fstream& out, std::vector<std::vector<char>>& map, const Coordinat
 				}
 			}
 		}
-		locationsToFill.clear();
 	}
 	out << minutes;
 }
-
-
+	
+	
 int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-
 	std::vector<std::vector<char>> map(5000, std::vector<char>(5000, '-'));
 	std::vector<long long> integers;
 

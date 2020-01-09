@@ -37,12 +37,12 @@ public:
 
 void readInput(std::fstream& in, std::vector<long long>& integers)
 {
-	long long steps = 0;
+	long long number = 0;
 	char aux{};
 
-	while (in >> steps)
+	while (in >> number)
 	{
-		integers.push_back(steps);
+		integers.push_back(number);
 		in >> aux;
 	}
 }
@@ -159,7 +159,7 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const l
 				case 2:
 					map[droid.x + 1][droid.y] = '#';
 					break;
-					
+
 				case 3:
 					map[droid.x][droid.y - 1] = '#';
 					break;
@@ -174,25 +174,22 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const l
 				switch (input)
 				{
 				case 1:
-					map[droid.x - 1][droid.y] = '.';
 					droid.x--;
 					break;
 
 				case 2:
-					map[droid.x + 1][droid.y] = '.';
 					droid.x++;
 					break;
 
 				case 3:
-					map[droid.x][droid.y - 1] = '.';
 					droid.y--;
 					break;
 
 				case 4:
-					map[droid.x][droid.y + 1] = '.';
 					droid.y++;
 					break;
 				}
+				map[droid.x][droid.y] = '.';
 				break;
 
 			case 2:
@@ -232,13 +229,12 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const l
 
 Coordinate findOxygenSystem(std::fstream& out, std::vector<long long>& integers, std::vector<std::vector<char>>& map)
 {
-	int dirX[] = { 2,-1,1,0,0 };
-	int dirY[] = { 2,0,0,-1,1 };
-	long long auxCurrPos = 0;
-	long long auxRelativeBase = 0;
+	std::vector<int> dirX { 2,-1,1,0,0 };
+	std::vector<int> dirY { 2,0,0,-1,1 };
 	std::queue<state> states;
 	Coordinate droid(map.size() / 2, map.size() / 2), oxygenSystem;
 	state currState(integers, droid, 0, 0);
+	long long auxCurrPos = 0, auxRelativeBase = 0;
 
 	states.push(state(integers, droid, 0, 0));
 	map[droid.x][droid.y] = '.';
@@ -250,20 +246,21 @@ Coordinate findOxygenSystem(std::fstream& out, std::vector<long long>& integers,
 
 		for (int moveCommand = 1; moveCommand <= 4; moveCommand++)
 		{
-			if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] == '-')
+			if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] != '-')
 			{
-				integers = currState.integers;
-				droid = currState.droid;
-				auxCurrPos = currState.currPos;
-				auxRelativeBase = currState.relativeBase;
+				continue;
+			}
+			
+			integers = currState.integers;
+			droid = currState.droid;
+			auxCurrPos = currState.currPos;
+			auxRelativeBase = currState.relativeBase;
 
-				intCodeProgram(out, integers, moveCommand, map, droid, auxCurrPos, auxRelativeBase, oxygenSystem);
+			intCodeProgram(out, integers, moveCommand, map, droid, auxCurrPos, auxRelativeBase, oxygenSystem);
 
-				if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] == '.')
-				{
-					states.push(state(integers, Coordinate(currState.droid.x + dirX[moveCommand], currState.droid.y + dirY[moveCommand]), auxCurrPos, auxRelativeBase));
-				}
-
+			if (map[currState.droid.x + dirX[moveCommand]][currState.droid.y + dirY[moveCommand]] == '.')
+			{
+				states.push(state(integers, Coordinate(currState.droid.x + dirX[moveCommand], currState.droid.y + dirY[moveCommand]), auxCurrPos, auxRelativeBase));
 			}
 		}
 	}
@@ -276,9 +273,8 @@ void BFS(std::fstream& out, std::vector<std::vector<char>>& map, const Coordinat
 {
 	std::vector<std::vector<bool>> visited(map.size(), std::vector<bool>(map.size(), false));
 	std::queue<node> queue;
-	int dirX[] = { 2,-1,1,0,0 };
-	int dirY[] = { 2,0,0,-1,1 };
-
+	std::vector<int> dirX{ 2,-1,1,0,0 };
+	std::vector<int> dirY{ 2,0,0,-1,1 };
 	queue.push(node(map.size() / 2, map.size() / 2, 1));
 	visited[map.size() / 2][map.size() / 2] = true;
 
@@ -312,7 +308,6 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-
 	std::vector<std::vector<char>> map(5000, std::vector<char>(5000, '-'));
 	std::vector<long long> integers;
 
