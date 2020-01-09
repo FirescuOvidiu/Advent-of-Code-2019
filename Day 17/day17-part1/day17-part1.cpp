@@ -117,7 +117,6 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const l
 			break;
 
 		case 4:
-			//out << integers[posMode1] << " ";
 			switch (integers[posMode1])
 			{
 			case 10:
@@ -168,7 +167,7 @@ int findSumScaffoldIntersections(const std::vector<std::vector<char>>& map)
 	{
 		for (int y = 1; y < columns - 1; y++)
 		{
-			if ((map[x][y] == '#') && (map[x + 1][y] == '#') && (map[x - 1][y] == '#') 
+			if ((map[x][y] == '#') && (map[x + 1][y] == '#') && (map[x - 1][y] == '#')
 				&& (map[x][y + 1] == '#') && (map[x][y - 1] == '#'))
 			{
 				sum += x * y;
