@@ -74,28 +74,28 @@ void findPortals(const std::vector<std::vector<char>>& map, std::map<std::string
 					portalCoord.x = x + dirX[i];
 					portalCoord.y = y + dirY[i];
 					foundCoordinate = true;
+					continue;
 				}
 
 				if (isupper(map[x + dirX[i]][y + dirY[i]]))
 				{
 					portalName += map[x + dirX[i]][y + dirY[i]];
-					if (!foundCoordinate)
-					{
-						for (int j = 0; j < 4; j++)
-						{
-							if ((checkInMap(x + dirX[i] + dirX[j], y + dirY[i] + dirY[j], map.size(), map[0].size()))
-								&& (map[x + dirX[i] + dirX[j]][y + dirY[i] + dirY[j]] == '.'))
-							{
-								portalCoord.x = x + dirX[i] + dirX[j];
-								portalCoord.y = y + dirY[i] + dirY[j];
-								foundCoordinate = true;
-								break;
-							}
-						}
-					}
+
 					if (foundCoordinate)
 					{
 						break;
+					}
+
+					for (int j = 0; j < 4; j++)
+					{
+						if ((checkInMap(x + dirX[i] + dirX[j], y + dirY[i] + dirY[j], map.size(), map[0].size()))
+							&& (map[x + dirX[i] + dirX[j]][y + dirY[i] + dirY[j]] == '.'))
+						{
+							portalCoord.x = x + dirX[i] + dirX[j];
+							portalCoord.y = y + dirY[i] + dirY[j];
+							foundCoordinate = true;
+							break;
+						}
 					}
 				}
 			}
@@ -156,6 +156,7 @@ int BFS(const std::vector<std::vector<char>>& map,std::map<std::string, std::pai
 			{
 				q.push(Coordinate(x, y, curr.steps + 1));
 				visit[x][y] = true;
+				continue;
 			}
 
 			if (isupper(map[x][y]))

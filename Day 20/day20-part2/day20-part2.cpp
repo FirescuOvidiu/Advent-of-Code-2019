@@ -75,6 +75,7 @@ void findPortals(const std::vector<std::vector<char>>& map, std::map<std::string
 					portalCoord.x = x + dirX[i];
 					portalCoord.y = y + dirY[i];
 					foundCoordinate = true;
+					continue;
 				}
 
 				if (isupper(map[x + dirX[i]][y + dirY[i]]))
@@ -131,7 +132,6 @@ void teleport(std::queue<Coordinate>& q, std::vector<std::vector<std::vector<boo
 	{
 		if (curr.level - 1 >= 0)
 		{
-
 			q.push(Coordinate(second.x, second.y, curr.level - 1, curr.steps + 1));
 			visit[curr.level - 1][second.x][second.y] = true;
 		}
@@ -143,8 +143,8 @@ void teleport(std::queue<Coordinate>& q, std::vector<std::vector<std::vector<boo
 int BFS(const std::vector<std::vector<char>>& map, std::map<std::string, std::pair<Coordinate, Coordinate>>& portals, const Coordinate& start, const Coordinate& end)
 {
 	std::vector<std::vector<std::vector<bool>>> visit(1000, std::vector<std::vector<bool>>(1000, std::vector<bool>(1000)));
-	int dirX[] = { -1,0,0,1 };
-	int dirY[] = { 0,-1,1,0 };
+	std::vector<int> dirX { -1,0,0,1 };
+	std::vector<int> dirY{ 0,-1,1,0 };
 	std::queue<Coordinate> q;
 	std::string portalName;
 	Coordinate curr;
@@ -179,6 +179,7 @@ int BFS(const std::vector<std::vector<char>>& map, std::map<std::string, std::pa
 			{
 				q.push(Coordinate(x, y, curr.level, curr.steps + 1));
 				visit[curr.level][x][y] = true;
+				continue;
 			}
 
 			if (isupper(map[x][y]))
