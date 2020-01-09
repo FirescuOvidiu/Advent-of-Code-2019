@@ -17,22 +17,23 @@ void FFTAlgorithm(std::vector<int>& sequence, const std::vector<int>& basePatter
 {
 	std::vector<int> newSequence(sequence.size());
 	std::vector<int> pattern;
-	int it = 1, sum = 0, phase = 0;
+	int it = 1, sum = 0;
 
-	while (phase < 100)
+	for (int phase = 0; phase < 100; phase++)
 	{
 		for (int digit = 0; digit < sequence.size(); digit++)
 		{
-			// New pattern
+			// Calculate pattern for current phase
 			pattern.clear();
-			for (int itBasePattern = 0; itBasePattern < basePattern.size(); itBasePattern++)
+			for (const auto& currBasePattern : basePattern)
 			{
-				for (int it = 0; it <= digit; it++)
+				for (int iterator = 0; iterator <= digit; iterator++)
 				{
-					pattern.push_back(basePattern[itBasePattern]);
+					pattern.push_back(currBasePattern);
 				}
 			}
 
+			// Calculate the new sequence for the next phase
 			sum = 0;
 			for (int currDigit = digit; currDigit < sequence.size(); currDigit++)
 			{
@@ -42,7 +43,6 @@ void FFTAlgorithm(std::vector<int>& sequence, const std::vector<int>& basePatter
 			newSequence[digit] = abs(sum) % 10;
 		}
 		sequence = newSequence;
-		phase++;
 	}
 }
 
@@ -51,11 +51,10 @@ int main()
 {
 	std::fstream in("input.in", std::fstream::in);
 	std::fstream out("output.out", std::fstream::out);
-	std::vector<int> basePattern{ 0,1,0,-1 };
 	std::vector<int> sequence;
-	
-	readInput(in, sequence);
+	std::vector<int> basePattern{ 0,1,0,-1 };
 
+	readInput(in, sequence);
 	FFTAlgorithm(sequence, basePattern);
 
 	for (int it = 0; it < 8; it++)
