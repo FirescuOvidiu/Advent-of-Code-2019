@@ -167,7 +167,7 @@ int main()
 	std::queue<long long> input;
 
 	// ((!A || !B || !C) && D) && (H || E)
-	// If I can jump again or walk forward one tile after jumping than jump
+	// If I can jump again or walk forward one tile after jumping then jump
 	initQueue("NOT A T\n", input);
 	initQueue("OR T J\n", input);
 	initQueue("NOT B T\n", input);

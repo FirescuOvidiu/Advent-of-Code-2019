@@ -168,7 +168,7 @@ int main()
 
 	// (!A || !B || !C) && D
 	// If we have a hole (one tile away or two tiles away or three tiles away) and the forth tile where
-	// we will land after jumping is ground than we jump
+	// we will land after jumping is ground then we jump
 	initQueue("NOT A T\n", input);
 	initQueue("OR T J\n", input);
 	initQueue("NOT B T\n", input);
