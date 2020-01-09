@@ -118,10 +118,6 @@ bool intCodeProgram(std::fstream& out, std::vector<long long> integers, long lon
 		case 4:
 			return integers[posMode1];
 
-			out << integers[posMode1] << " ";
-			currPos = currPos + 2;
-			break;
-
 		case 5:
 			currPos = integers[posMode1] != 0 ? integers[posMode2] : currPos + 3;
 			break;
