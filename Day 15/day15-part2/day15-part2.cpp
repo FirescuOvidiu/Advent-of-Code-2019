@@ -226,16 +226,15 @@ void intCodeProgram(std::fstream& out, std::vector<long long>& integers, const i
 	}
 }
 	
-	
+
 Coordinate findOxygenSystem(std::fstream& out, std::vector<long long>& integers, std::vector<std::vector<char>>& map)
 {
 	std::vector<int> dirX{ 2,-1,1,0,0 };
 	std::vector<int> dirY{ 2,0,0,-1,1 };
-	long long auxCurrPos = 0;
-	long long auxRelativeBase = 0;
 	std::queue<state> states;
 	Coordinate droid(map.size() / 2, map.size() / 2), oxygenSystem;
 	state currState(integers, droid, 0, 0);
+	long long auxCurrPos = 0, auxRelativeBase = 0;
 
 	states.push(state(integers, droid, 0, 0));
 	map[droid.x][droid.y] = '.';
@@ -263,7 +262,6 @@ Coordinate findOxygenSystem(std::fstream& out, std::vector<long long>& integers,
 			{
 				states.push(state(integers, Coordinate(currState.droid.x + dirX[moveCommand], currState.droid.y + dirY[moveCommand]), auxCurrPos, auxRelativeBase));
 			}
-
 		}
 	}
 
