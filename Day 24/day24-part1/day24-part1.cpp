@@ -27,9 +27,9 @@ bool checkInMap(int x, int y, int lines, int columns)
 int findBiodiversityRating(std::vector<std::vector<char>>& map)
 {
 	std::vector< std::vector<std::vector<char>>> visit;
-	std::vector<std::vector<char>> currMap(map);
-	std::vector<int> dx{ -1,0,0,1 };
-	std::vector<int> dy{ 0,-1,1,0 };
+	std::vector<std::vector<char>> newMap(map);
+	std::vector<int> dirX{ -1,0,0,1 };
+	std::vector<int> dirY{ 0,-1,1,0 };
 	int bugs{ 0 };
 
 	visit.push_back(map);
@@ -42,28 +42,25 @@ int findBiodiversityRating(std::vector<std::vector<char>>& map)
 				bugs = 0;
 				for (int k = 0; k < 4; k++)
 				{
-					if (checkInMap(l + dx[k], c + dy[k], 5, 5))
+					if (checkInMap(l + dirX[k], c + dirY[k], 5, 5)
+						&& (map[l + dirX[k]][c + dirY[k]] == '#'))
 					{
-
-						if (map[l + dx[k]][c + dy[k]] == '#')
-						{
-							bugs++;
-						}
+						bugs++;
 					}
 				}
 
 				if ((map[l][c] == '#') && (bugs != 1))
 				{
-					currMap[l][c] = '.';
+					newMap[l][c] = '.';
 				}
 				if ((map[l][c] == '.') && ((bugs == 1) || (bugs == 2)))
 				{
-					currMap[l][c] = '#';
+					newMap[l][c] = '#';
 				}
 			}
 		}
 
-		map = currMap;
+		map = newMap;
 
 		for (int it = 0; it < visit.size(); it++)
 		{
@@ -87,6 +84,7 @@ int findBiodiversityRating(std::vector<std::vector<char>>& map)
 		visit.push_back(map);
 	}
 }
+
 
 int main()
 {

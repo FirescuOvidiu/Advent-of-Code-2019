@@ -28,10 +28,10 @@ int numberBugs(std::vector<std::vector<char>>& map, const int minutes)
 {
 	std::vector<std::vector<char>> emptyGrid(5, std::vector<char>(5, '.'));
 	std::vector< std::vector<std::vector<char>>> levels;
-	std::vector<int> dx{ -1,0,0,1 };
-	std::vector<int> dy{ 0,-1,1,0 };
-	int bugs{ 0 }, countBugs{ 0 };
-	int lowestDepth{ minutes }, highestDepth{ minutes + 2 };
+	std::vector<int> dirX{ -1,0,0,1 };
+	std::vector<int> dirY{ 0,-1,1,0 };
+	int bugs = 0, lowestDepth{ minutes }, highestDepth{ minutes + 2 };
+
 	emptyGrid[2][2] = '?';
 	map[2][2] = '?';
 
@@ -45,14 +45,14 @@ int numberBugs(std::vector<std::vector<char>>& map, const int minutes)
 		levels.push_back(emptyGrid);
 	}
 
-	std::vector< std::vector<std::vector<char>>> currLevels(levels);
-	std::vector<std::vector<char>> currMap(emptyGrid);
+	std::vector< std::vector<std::vector<char>>> newLevels(levels);
+	std::vector<std::vector<char>> newMap(emptyGrid);
 
 	for (int it = 0; it < minutes; it++)
 	{
 		for (int lvl = lowestDepth; lvl <= highestDepth; lvl++)
 		{
-			currMap = levels[lvl];
+			newMap = levels[lvl];
 			for (int i = 0; i < 5; i++)
 			{
 				for (int j = 0; j < 5; j++)
@@ -60,9 +60,9 @@ int numberBugs(std::vector<std::vector<char>>& map, const int minutes)
 					bugs = 0;
 					for (int k = 0; k < 4; k++)
 					{
-						if (checkInMap(i + dx[k], j + dy[k], 5, 5))
+						if (checkInMap(i + dirX[k], j + dirY[k], 5, 5))
 						{
-							if (levels[lvl][i + dx[k]][j + dy[k]] == '?')
+							if (levels[lvl][i + dirX[k]][j + dirY[k]] == '?')
 							{
 								switch (k)
 								{
@@ -109,7 +109,7 @@ int numberBugs(std::vector<std::vector<char>>& map, const int minutes)
 							}
 							else
 							{
-								if (levels[lvl][i + dx[k]][j + dy[k]] == '#')
+								if (levels[lvl][i + dirX[k]][j + dirY[k]] == '#')
 								{
 									bugs++;
 								}
@@ -117,7 +117,7 @@ int numberBugs(std::vector<std::vector<char>>& map, const int minutes)
 						}
 						else
 						{
-							if (levels[lvl - 1][2 + dx[k]][2 + dy[k]] == '#')
+							if (levels[lvl - 1][2 + dirX[k]][2 + dirY[k]] == '#')
 							{
 								bugs++;
 							}
@@ -126,21 +126,22 @@ int numberBugs(std::vector<std::vector<char>>& map, const int minutes)
 
 					if ((levels[lvl][i][j] == '#') && (bugs != 1))
 					{
-						currMap[i][j] = '.';
+						newMap[i][j] = '.';
 					}
 					if ((levels[lvl][i][j] == '.') && ((bugs == 1) || (bugs == 2)))
 					{
-						currMap[i][j] = '#';
+						newMap[i][j] = '#';
 					}
 				}
 			}
-			currLevels[lvl] = currMap;
+			newLevels[lvl] = newMap;
 		}
 		lowestDepth--;
 		highestDepth++;
-		levels = currLevels;
+		levels = newLevels;
 	}
 
+	int countBugs = 0;
 	for (int i = 0; i <= minutes * 2 + 1; i++)
 	{
 		for (int j = 0; j < 5; j++)
