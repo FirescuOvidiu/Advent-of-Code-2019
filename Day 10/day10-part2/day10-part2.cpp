@@ -48,9 +48,9 @@ int findGCD(int a, int b)
 
 void calcDistBetweenBlockedAsteroids(Coordinate& distance, const Coordinate& currAsteroid, const int l, const int c)
 {
-	int cmmdc = findGCD(abs(currAsteroid.x - l), abs(currAsteroid.y - c));
-	distance.x = abs(currAsteroid.x - l) / cmmdc;
-	distance.y = abs(currAsteroid.y - c) / cmmdc;
+	int GCD = findGCD(abs(currAsteroid.x - l), abs(currAsteroid.y - c));
+	distance.x = abs(currAsteroid.x - l) / GCD;
+	distance.y = abs(currAsteroid.y - c) / GCD;
 
 	if ((currAsteroid.x >= l) && (currAsteroid.y < c))
 	{
@@ -185,25 +185,6 @@ Coordinate findCoordMaxAsteroids(const std::vector<std::vector<char>>& map)
 		}
 	}
 	return coordMaxAsteroids;
-}
-
-
-void bubble(std::vector<Coordinate> & final, int a, int b)
-{
-	if (final.size() <= 1)
-	{
-		return;
-	}
-	int i, j;
-	for (i = 0; i < final.size() - 1; i++)
-
-		// Last i elements are already in place  
-		for (j = 0; j < final.size() - i - 1; j++)
-			if ((atan2(final[j].x - a, final[j].y - b) * 180 / 3.1415 >=
-				atan2(final[j + 1].x - a, final[j + 1].y - b) * 180 / 3.1415))
-			{
-				std::swap(final[j], final[j + 1]);
-			}
 }
 
 

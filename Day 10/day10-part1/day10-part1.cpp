@@ -45,9 +45,9 @@ int findGCD(int a, int b)
 
 void calcDistBetweenBlockedAsteroids(Coordinate& distance, const Coordinate& currAsteroid, const int l, const int c)
 {
-	int cmmdc = findGCD(abs(currAsteroid.x - l), abs(currAsteroid.y - c));
-	distance.x = abs(currAsteroid.x - l) / cmmdc;
-	distance.y = abs(currAsteroid.y - c) / cmmdc;
+	int GCD = findGCD(abs(currAsteroid.x - l), abs(currAsteroid.y - c));
+	distance.x = abs(currAsteroid.x - l) / GCD;
+	distance.y = abs(currAsteroid.y - c) / GCD;
 
 	if ((currAsteroid.x >= l) && (currAsteroid.y < c))
 	{
